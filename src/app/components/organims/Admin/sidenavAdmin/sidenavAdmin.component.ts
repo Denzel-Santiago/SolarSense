@@ -1,24 +1,20 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgFor, NgIf } from '@angular/common';
-import { SideNavService } from '../../../services/side-nav.service';
+import { SideNavService } from '../../../../services/side-nav.service';
 
 @Component({
-  selector: 'app-side-nav',
-  templateUrl: './sidenav.component.html',
-  styleUrls: ['./sidenav.component.css'],
+  selector: 'app-side-nav-Admin',
+  templateUrl: './sidenavAdmin.component.html',
   standalone: true,
   imports: [NgFor, NgIf]
 })
-export class SideNavComponent {
+export class SideNavAdminComponent {
   menuItems = [
+    { icon: 'assets/usuario.png', label: 'Lista-Usuarios' },
+    { icon: 'assets/card.png', label: 'Membresias' },
     { icon: 'assets/novedad.png', label: 'Novedades' },
-    { icon: 'assets/home.png', label: 'Dashboard' },
-    { icon: 'assets/voltaje.png', label: 'Voltaje' },
-    { icon: 'assets/presion.png', label: 'Presion Atmosferica' },
-    { icon: 'assets/humedad.png', label: 'Humedad' },
-    { icon: 'assets/temperatura.png', label: 'Temperatura' },
-    { icon: 'assets/usuario.png', label: 'Perfil' },
+    { icon: 'assets/alert.png', label: 'Alerta' },
     { icon: 'assets/salir.png', label: 'Salir' }
   ];
 
@@ -39,19 +35,19 @@ export class SideNavComponent {
     if (item.label === 'Salir') {
       this.router.navigate(['']);
     } else if (item.label === 'Dashboard') {
-      this.router.navigate(['Sensores/UsuarioDash']);
+      this.router.navigate(['Sensores/']);
     } else if (item.label === 'Voltaje') {
-      this.router.navigate(['Sensores/Voltaje']);
+      this.router.navigate(['Sensores/']);
     } else if (item.label === 'Humedad') {
-      this.router.navigate(['Sensores/Humedad']);
+      this.router.navigate(['Sensores/']);
     } else if (item.label === 'Temperatura') {
-      this.router.navigate(['Sensores/Temperatura']);
+      this.router.navigate(['Sensores/']);
     } else if (item.label === 'Presion Atmosferica') {
-      this.router.navigate(['Sensores/PresionAtmosferica']);
+      this.router.navigate(['Sensores/']);
     } else if (item.label === 'Novedades') {
-      this.router.navigate(['Sensores/Novedades']);
+      this.router.navigate(['Sensores/']);
     }else if (item.label === 'Perfil') {
-      this.router.navigate(['Sensores/Perfil']);
+      this.router.navigate(['Sensores/']);
     }
     
     

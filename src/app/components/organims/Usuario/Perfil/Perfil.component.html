@@ -1,0 +1,88 @@
+<div class="flex h-screen overflow-hidden">
+  <app-side-nav></app-side-nav>
+
+  <div class="flex-1 flex flex-col overflow-auto bg-gray-100">
+
+    <!-- Encabezado -->
+    <div class="p-6 bg-[#1c392c] text-white text-3xl font-bold">PERFIL</div>
+
+    <!-- Contenido -->
+    <div class="p-6 space-y-8 bg-white flex-grow">
+
+      <!-- Tarjeta de usuario -->
+      <div class="bg-[#23402d] text-white p-6 rounded-lg flex items-center justify-between flex-wrap gap-4">
+        
+        <!-- Imagen de perfil -->
+        <div class="w-28 h-28 rounded-full bg-gray-300 overflow-hidden">
+          <img *ngIf="usuario.imagen" [src]="usuario.imagen" class="w-full h-full object-cover" />
+        </div>
+
+        <!-- Info -->
+        <div class="flex-1 min-w-[200px]">
+          <p class="font-semibold mb-2">NOMBRE: {{ usuario.nombre }}</p>
+          <p class="font-semibold mb-2">NOMBRE DE USUARIO: {{ usuario.usuario }}</p>
+          <p class="font-semibold">CORREO: {{ usuario.correo }}</p>
+        </div>
+
+        <!-- Botón editar -->
+        <button class="text-white text-2xl" (click)="abrirModal()">✏️</button>
+      </div>
+
+      <!-- Raspberries en línea -->
+      <div>
+        <h2 class="text-lg font-bold mb-4">RASPBERRYS EN LINEA</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div *ngFor="let pi of raspberries"
+               class="bg-[#6c7a2e] text-white rounded-2xl p-4 flex flex-col items-center justify-center w-32 h-32 shadow-md">
+            <img [src]="pi.icono" alt="Raspberry Pi" class="w-10 h-10 mb-2" />
+            <p class="text-center font-semibold">{{ pi.nombre }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div *ngIf="modalAbierto"
+     class="fixed inset-0 flex items-center justify-center z-50 pointer-events-auto backdrop-blur-sm">
+
+
+  <div class="bg-white p-6 rounded-lg w-full max-w-md shadow-lg border">
+    <h2 class="text-xl font-bold mb-4 text-center">Editar Perfil</h2>
+
+    <form (ngSubmit)="guardarCambios()" class="space-y-4">
+      <!-- Imagen -->
+      <div class="text-center">
+        <div class="w-24 h-24 mx-auto rounded-full bg-gray-200 overflow-hidden">
+          <img *ngIf="imagenPreview" [src]="imagenPreview" class="w-full h-full object-cover" />
+        </div>
+        <input type="file" accept="image/*" (change)="subirImagen($event)" class="mt-2 text-sm" />
+      </div>
+
+      <!-- Nombre -->
+      <div>
+        <label class="block font-medium">Nombre</label>
+        <input [(ngModel)]="usuarioTemporal.nombre" name="nombre" class="w-full border rounded px-3 py-2" />
+      </div>
+
+      <!-- Usuario -->
+      <div>
+        <label class="block font-medium">Nombre de Usuario</label>
+        <input [(ngModel)]="usuarioTemporal.usuario" name="usuario" class="w-full border rounded px-3 py-2" />
+      </div>
+
+      <!-- Correo -->
+      <div>
+        <label class="block font-medium">Correo</label>
+        <input [(ngModel)]="usuarioTemporal.correo" name="correo" type="email" class="w-full border rounded px-3 py-2" />
+      </div>
+
+      <!-- Botones -->
+      <div class="flex justify-end gap-3 pt-4">
+        <button type="button" (click)="cerrarModal()" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancelar</button>
+        <button type="submit" class="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-800">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>

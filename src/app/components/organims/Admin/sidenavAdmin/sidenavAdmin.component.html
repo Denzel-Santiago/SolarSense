@@ -3,7 +3,6 @@
   [class.expanded]="isExpanded"
   [class.w-[220px]]="isExpanded"
 >
-  <!-- Botón hamburguesa -->
 <div 
   class="p-[15px] cursor-pointer flex items-center justify-center hover:bg-[#2d5244] transition-colors duration-300 border-b border-[#3a5747] rounded-md"
   (click)="toggleNav()"
@@ -12,12 +11,11 @@
   <span *ngIf="isExpanded" class="ml-[12px] font-bold text-white text-[16px]">Menú</span>
 </div>
 
-<!-- Menú principal -->
 <div class="flex-1 flex flex-col justify-between">
   <div *ngFor="let item of menuItems" 
        class="flex items-center px-[15px] h-[60px] cursor-pointer hover:bg-[#2d5244] transition-colors duration-300"
        (click)="handleItemClick(item)">
-    <img [src]="item.icon" class="w-[35px] h-[35px] mr-[10px]" alt="icono" />
+    <img [src]="item.icon" class="w-[40px] h-[40px] mr-[10px]" alt="icono" />
     <span *ngIf="isExpanded" class="text-white text-[15px]">{{ item.label }}</span>
   </div>
 </div>

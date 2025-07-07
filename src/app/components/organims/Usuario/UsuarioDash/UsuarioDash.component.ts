@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ChartModule } from 'primeng/chart';
-import { SideNavComponent } from '../../components/organims/sidenav/sidenav.component';
+import { SideNavComponent } from '../../sidenav/sidenav.component';
 
 
 @Component({
