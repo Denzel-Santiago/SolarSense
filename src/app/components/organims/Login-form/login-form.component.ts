@@ -32,16 +32,58 @@ export class loginFormComponent implements AfterViewInit {
   constructor(private http: HttpClient) {}
 
   ngAfterViewInit(): void {
-    // Inicializar el botón de Google una vez que el DOM esté listo
-    window.google?.accounts.id.initialize({
-      client_id: 'TU_CLIENT_ID_DE_GOOGLE', // 🔁 Reemplaza esto
-      callback: (response: any) => this.handleGoogleLogin(response)
+    this.loadGoogleScript(() => {
+      this.initializeGoogleLogin();
     });
+  }
 
-    window.google?.accounts.id.renderButton(
-      document.getElementById("googleLogin")!,
-      { theme: "outline", size: "large" }
-    );
+  preventFlip(event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    return false;
+  }
+
+  private loadGoogleScript(callback: () => void) {
+    if (window.google?.accounts?.id) {
+      callback();
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    script.onload = callback;
+    document.head.appendChild(script);
+  }
+
+  private initializeGoogleLogin() {
+    try {
+      window.google.accounts.id.initialize({
+        client_id: '661193722643-3hgg12o628opmlgo4suq0bk707195qnc.apps.googleusercontent.com',
+        callback: (response: any) => this.handleGoogleLogin(response),
+        ux_mode: 'popup',
+        context: 'use',
+         hosted_domain: 'localhost',
+      redirect_uri: 'http://localhost:4200'
+      });
+
+      window.google.accounts.id.renderButton(
+        document.getElementById("googleLogin"),
+        { 
+          theme: "outline", 
+          size: "large",
+          text: "continue_with",
+          width: "300"
+        }
+      );
+
+      // Opcional: Elimina el prompt automático si no lo necesitas
+      window.google.accounts.id.prompt();
+    } catch (error) {
+      console.error('Error initializing Google Auth:', error);
+    }
   }
 
   onLogin() {
@@ -52,7 +94,7 @@ export class loginFormComponent implements AfterViewInit {
       next: res => {
         alert("✅ Inicio de sesión exitoso");
         setTimeout(() => {
-          window.location.href = '/dashboard.html';
+          window.location.href = '/Sensores';
         }, 1500);
       },
       error: err => {
@@ -90,7 +132,7 @@ export class loginFormComponent implements AfterViewInit {
       next: res => {
         alert("✅ Autenticación con Google exitosa");
         setTimeout(() => {
-          window.location.href = '/dashboard.html';
+          window.location.href = '/Sensores';
         }, 1500);
       },
       error: err => {
