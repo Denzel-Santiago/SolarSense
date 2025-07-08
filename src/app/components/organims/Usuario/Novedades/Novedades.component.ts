@@ -18,6 +18,7 @@ export class NovedadesComponent {
 
   historial = [
     {
+        
       titulo: 'ACTUALIZACION',
       fecha: '02',
       cambios: ['Cambios realizados', 'Correcciones de errores', 'Mejoras en el sistema']

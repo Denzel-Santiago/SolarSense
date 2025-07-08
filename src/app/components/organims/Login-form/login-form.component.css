@@ -1,4 +1,10 @@
 .wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #b0b0b0;
+
   --input-focus: #1f3d27;
   --font-color: #1f3d27;
   --font-color-sub: #666;
@@ -97,8 +103,8 @@
 /* card */
 
 .flip-card__inner {
-  width: 300px;
-  height: 420px;
+  width: 400px;
+  height: 550px;
   position: relative;
   background-color: transparent;
   perspective: 1000px;
@@ -113,7 +119,7 @@
 
 .flip-card__front,
 .flip-card__back {
-  padding: 20px;
+  padding: 30px;
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -121,7 +127,7 @@
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   background: #ffffff;
-  gap: 20px;
+  gap: 25px;
   border-radius: 5px;
   border: 2px solid var(--main-color);
   box-shadow: 4px 4px var(--main-color);
@@ -141,23 +147,23 @@
 
 .title {
   margin: 20px 0;
-  font-size: 25px;
+  font-size: 32px;
   font-weight: 900;
   text-align: center;
   color: var(--main-color);
 }
 
 .flip-card__input {
-  width: 250px;
-  height: 40px;
-  border-radius: 5px;
+  width: 320px;
+  height: 50px;
+  border-radius: 8px;
   border: 2px solid var(--main-color);
   background-color: var(--bg-color);
   box-shadow: 4px 4px var(--main-color);
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
   color: var(--font-color);
-  padding: 5px 10px;
+  padding: 10px 14px;
   outline: none;
 }
 
@@ -172,13 +178,13 @@
 
 .flip-card__btn {
   margin: 0;
-  width: 250px;
-  height: 40px;
-  border-radius: 5px;
+  width: 320px;
+  height: 50px;
+  border-radius: 8px;
   border: 2px solid var(--main-color);
   background-color: var(--main-color);
   box-shadow: 4px 4px var(--main-color);
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 600;
   color: white;
   cursor: pointer;
@@ -204,19 +210,4 @@
   width: 20px;
   height: 20px;
   margin-right: 10px;
-}
-
-/* Centrado total */
-.wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh; /* Ocupa todo el alto de pantalla */
-  background-color: #b0b0b0;
-  --input-focus: #1f3d27;
-  --font-color: #1f3d27;
-  --font-color-sub: #666;
-  --bg-color: #ffffff;
-  --bg-color-alt: #666;
-  --main-color: #1f3d27;
 }

@@ -9,9 +9,11 @@ import { PresionAtmosfericaComponent } from './components/organims/Usuario/Presi
 import { SensoresComponent } from './pages/Sensores/Sensores.component'; 
 import { NovedadesComponent } from './components/organims/Usuario/Novedades/Novedades.component';
 import { PerfilComponent } from './components/organims/Usuario/Perfil/Perfil.component';
+import { HomeComponent } from './pages/Home/Home.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
+  { path: 'Home', component: HomeComponent },
 
   {
     path: 'Sensores',
