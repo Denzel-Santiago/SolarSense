@@ -2,6 +2,7 @@ import { Component, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import Swal from 'sweetalert2';
 
 declare global {
   interface Window {
@@ -65,21 +66,20 @@ export class loginFormComponent implements AfterViewInit {
         callback: (response: any) => this.handleGoogleLogin(response),
         ux_mode: 'popup',
         context: 'use',
-         hosted_domain: 'localhost',
-      redirect_uri: 'http://localhost:4200'
+        hosted_domain: 'localhost',
+        redirect_uri: 'http://localhost:4200'
       });
 
       window.google.accounts.id.renderButton(
         document.getElementById("googleLogin"),
-        { 
-          theme: "outline", 
+        {
+          theme: "outline",
           size: "large",
           text: "continue_with",
           width: "300"
         }
       );
 
-      // Opcional: Elimina el prompt automático si no lo necesitas
       window.google.accounts.id.prompt();
     } catch (error) {
       console.error('Error initializing Google Auth:', error);
@@ -92,20 +92,33 @@ export class loginFormComponent implements AfterViewInit {
       password: this.loginData.password
     }).subscribe({
       next: res => {
-        alert("✅ Inicio de sesión exitoso");
+        Swal.fire({
+          icon: 'success',
+          title: 'Inicio de sesión exitoso',
+          showConfirmButton: false,
+          timer: 1500
+        });
         setTimeout(() => {
           window.location.href = '/Sensores';
         }, 1500);
       },
       error: err => {
-        alert(`❌ Error: ${err.error?.error || 'Error desconocido'}`);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: err.error?.error || 'Error desconocido'
+        });
       }
     });
   }
 
   onRegister() {
     if (this.registerData.password !== this.registerData.confirmPassword) {
-      alert("❌ Las contraseñas no coinciden");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Las contraseñas no coinciden'
+      });
       return;
     }
 
@@ -115,10 +128,20 @@ export class loginFormComponent implements AfterViewInit {
       username: this.registerData.username
     }).subscribe({
       next: res => {
-        alert("✅ Registro exitoso. Ahora puedes iniciar sesión.");
+        Swal.fire({
+          icon: 'success',
+          title: 'Registro exitoso',
+          text: 'Ahora puedes iniciar sesión',
+          showConfirmButton: false,
+          timer: 2000
+        });
       },
       error: err => {
-        alert(`❌ Error: ${err.error?.error || 'Error desconocido'}`);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error en el registro',
+          text: err.error?.error || 'Error desconocido'
+        });
       }
     });
   }
@@ -130,13 +153,22 @@ export class loginFormComponent implements AfterViewInit {
       idToken
     }).subscribe({
       next: res => {
-        alert("✅ Autenticación con Google exitosa");
+        Swal.fire({
+          icon: 'success',
+          title: 'Inicio con Google exitoso',
+          showConfirmButton: false,
+          timer: 1500
+        });
         setTimeout(() => {
           window.location.href = '/Sensores';
         }, 1500);
       },
       error: err => {
-        alert(`❌ Error: ${err.error?.error || 'Error desconocido'}`);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error con Google',
+          text: err.error?.error || 'Error desconocido'
+        });
       }
     });
   }

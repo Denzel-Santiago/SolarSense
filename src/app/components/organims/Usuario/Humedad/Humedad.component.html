@@ -1,18 +1,31 @@
 <div class="flex h-screen overflow-hidden">
-
   <app-side-nav></app-side-nav>
-  
+
   <div class="flex-1 flex flex-col overflow-auto bg-gray-100">
-    
     <div class="p-6 bg-[#1c392c] text-white text-3xl font-bold">
       SENSOR DE HUMEDAD
     </div>
 
-    <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 bg-white flex-grow">
-      
-       <p-chart [type]="humedadChart.type" [data]="humedadChart.data" class="w-full h-[300px]"></p-chart>
+    <div class="p-6 flex flex-col lg:flex-row gap-6 bg-white flex-grow">
+      <!-- Gráfica -->
+      <div class="flex-1">
+        <p-chart [type]="humedadChart.type" [data]="humedadChart.data" class="w-full h-[300px]"></p-chart>
+      </div>
 
+      <!-- Panel derecho con dos tarjetas -->
+      <div class="flex flex-col gap-4 w-full lg:w-[300px]">
+        <!-- Estado de conexión -->
+        <div class="p-4 rounded-xl shadow text-white text-lg font-semibold"
+             [ngClass]="sensorConectado ? 'bg-green-500' : 'bg-red-500'">
+          {{ sensorConectado ? '✅ Sensor Conectado' : '❌ Sensor Desconectado' }}
+        </div>
+
+        <!-- Último valor de humedad -->
+        <div class="p-4 rounded-xl shadow text-center text-lg font-bold transition-colors"
+             [ngClass]="colorEstado">
+          🌧 Humedad actual: {{ humedadActual }}%
+        </div>
+      </div>
     </div>
   </div>
-
 </div>
