@@ -87,7 +87,7 @@ export class loginFormComponent implements AfterViewInit {
   }
 
   onLogin() {
-    this.http.post<any>('http://3.223.148.111:8000/api/auth/email/login', {
+    this.http.post<any>('https://solarsense.zapto.org/api/auth/email/login', {
       email: this.loginData.email,
       password: this.loginData.password
     }).subscribe({
@@ -122,7 +122,7 @@ export class loginFormComponent implements AfterViewInit {
       return;
     }
 
-    this.http.post<any>('http://3.223.148.111:8000/api/auth/email/register', {
+    this.http.post<any>('https://solarsense.zapto.org/api/auth/email/register', {
       email: this.registerData.email,
       password: this.registerData.password,
       username: this.registerData.username
@@ -149,7 +149,7 @@ export class loginFormComponent implements AfterViewInit {
   handleGoogleLogin(response: any) {
     const idToken = response.credential;
 
-    this.http.post<any>('http://3.223.148.111:8000/api/auth/google', {
+    this.http.post<any>('https://solarsense.zapto.org/api/auth/google', {
       idToken
     }).subscribe({
       next: res => {
