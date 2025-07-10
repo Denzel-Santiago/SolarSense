@@ -66,8 +66,8 @@ export class loginFormComponent implements AfterViewInit {
         callback: (response: any) => this.handleGoogleLogin(response),
         ux_mode: 'popup',
         context: 'use',
-        hosted_domain: 'localhost',
-        redirect_uri: 'http://localhost:4200'
+        hosted_domain: 'solarsense.zapto.org',
+        redirect_uri: 'https://solarsense.zapto.org'
       });
 
       window.google.accounts.id.renderButton(
