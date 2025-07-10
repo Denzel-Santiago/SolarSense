@@ -1,0 +1,14 @@
+{
+  "routes": {
+    "/": {},
+    "/Home": {},
+    "/Sensores": {},
+    "/Sensores/Humedad": {},
+    "/Sensores/Novedades": {},
+    "/Sensores/Perfil": {},
+    "/Sensores/PresionAtmosferica": {},
+    "/Sensores/Temperatura": {},
+    "/Sensores/UsuarioDash": {},
+    "/Sensores/Voltaje": {}
+  }
+}
