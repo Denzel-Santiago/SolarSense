@@ -151,7 +151,9 @@ export class loginFormComponent implements AfterViewInit {
 
     this.http.post<any>('https://solarsense.zapto.org/api/auth/google', {
       idToken
-    }).subscribe({
+    }, {
+    withCredentials: true  // <-- Esta es la única línea que necesitas añadir
+  }).subscribe({
       next: res => {
         Swal.fire({
           icon: 'success',
