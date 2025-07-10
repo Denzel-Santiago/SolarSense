@@ -66,8 +66,8 @@ export class loginFormComponent implements AfterViewInit {
         callback: (response: any) => this.handleGoogleLogin(response),
         ux_mode: 'popup',
         context: 'use',
-        hosted_domain: 'solarsense.zapto.org',
-        redirect_uri: 'https://solarsense.zapto.org'
+        hosted_domain: 'apigo.servepics.com',
+        redirect_uri: 'https://apigo.servepics.com'
       });
 
       window.google.accounts.id.renderButton(
@@ -87,7 +87,7 @@ export class loginFormComponent implements AfterViewInit {
   }
 
   onLogin() {
-    this.http.post<any>('https://solarsense.zapto.org/api/auth/email/login', {
+    this.http.post<any>('https://apigo.servepics.com/api/auth/email/login', {
       email: this.loginData.email,
       password: this.loginData.password
     }).subscribe({
@@ -122,7 +122,7 @@ export class loginFormComponent implements AfterViewInit {
       return;
     }
 
-    this.http.post<any>('https://solarsense.zapto.org/api/auth/email/register', {
+    this.http.post<any>('https://apigo.servepics.com/api/auth/email/register', {
       email: this.registerData.email,
       password: this.registerData.password,
       username: this.registerData.username
@@ -149,11 +149,9 @@ export class loginFormComponent implements AfterViewInit {
   handleGoogleLogin(response: any) {
     const idToken = response.credential;
 
-    this.http.post<any>('https://solarsense.zapto.org/api/auth/google', {
+    this.http.post<any>('https://apigo.servepics.com/api/auth/google', {
       idToken
-    }, {
-    withCredentials: true  // <-- Esta es la única línea que necesitas añadir
-  }).subscribe({
+    }).subscribe({
       next: res => {
         Swal.fire({
           icon: 'success',
