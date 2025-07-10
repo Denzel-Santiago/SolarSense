@@ -30,11 +30,6 @@ export class loginFormComponent implements AfterViewInit {
     confirmPassword: ''
   };
 
-  // Definimos la URL base de la API según el entorno
-  private readonly API_BASE_URL = window.location.hostname === 'solarsense.zapto.org' 
-    ? 'https://apigo.servepics.com' 
-    : 'http://localhost:8000';
-
   constructor(private http: HttpClient) {}
 
   ngAfterViewInit(): void {
@@ -66,16 +61,13 @@ export class loginFormComponent implements AfterViewInit {
 
   private initializeGoogleLogin() {
     try {
-      const isProduction = window.location.hostname !== 'localhost' && 
-                         window.location.hostname !== '127.0.0.1';
-
       window.google.accounts.id.initialize({
         client_id: '661193722643-3hgg12o628opmlgo4suq0bk707195qnc.apps.googleusercontent.com',
         callback: (response: any) => this.handleGoogleLogin(response),
         ux_mode: 'popup',
         context: 'use',
-        hosted_domain: isProduction ? 'solarsense.zapto.org' : 'localhost',
-        redirect_uri: isProduction ? 'https://solarsense.zapto.org' : 'http://localhost'
+        hosted_domain: 'localhost',
+        redirect_uri: 'http://localhost:4200'
       });
 
       window.google.accounts.id.renderButton(
@@ -95,7 +87,7 @@ export class loginFormComponent implements AfterViewInit {
   }
 
   onLogin() {
-    this.http.post<any>(`${this.API_BASE_URL}/api/auth/email/login`, {
+    this.http.post<any>('http://3.223.148.111:8000/api/auth/email/login', {
       email: this.loginData.email,
       password: this.loginData.password
     }).subscribe({
@@ -130,7 +122,7 @@ export class loginFormComponent implements AfterViewInit {
       return;
     }
 
-    this.http.post<any>(`${this.API_BASE_URL}/api/auth/email/register`, {
+    this.http.post<any>('http://3.223.148.111:8000/api/auth/email/register', {
       email: this.registerData.email,
       password: this.registerData.password,
       username: this.registerData.username
@@ -157,7 +149,7 @@ export class loginFormComponent implements AfterViewInit {
   handleGoogleLogin(response: any) {
     const idToken = response.credential;
 
-    this.http.post<any>(`${this.API_BASE_URL}/api/auth/google`, {
+    this.http.post<any>('http://3.223.148.111:8000/api/auth/google', {
       idToken
     }).subscribe({
       next: res => {
