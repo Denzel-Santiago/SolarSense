@@ -34,10 +34,10 @@ export class SideNavAdminComponent {
   handleItemClick(item: any) {
     if (item.label === 'Salir') {
       this.router.navigate(['']);
-    } else if (item.label === 'Dashboard') {
-      this.router.navigate(['Sensores/']);
-    } else if (item.label === 'Voltaje') {
-      this.router.navigate(['Sensores/']);
+    } else if (item.label === 'Lista-Usuarios') {
+      this.router.navigate(['/Lista-Usuarios']);
+    } else if (item.label === 'Membresias') {
+      this.router.navigate(['Membresias']);
     } else if (item.label === 'Humedad') {
       this.router.navigate(['Sensores/']);
     } else if (item.label === 'Temperatura') {

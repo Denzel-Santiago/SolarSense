@@ -1,0 +1,58 @@
+<div class="flex h-screen overflow-hidden">
+  <app-side-nav-Admin></app-side-nav-Admin>
+
+  <div class="flex-1 flex flex-col overflow-auto bg-gray-100">
+    <!-- Encabezado -->
+    <div class="p-6 bg-[#1f3a2e] text-white text-3xl font-bold">NOVEDADES</div>
+
+    <!-- Contenido -->
+    <div class="p-6 bg-white space-y-6 flex-grow overflow-y-auto">
+
+      <!-- Botones -->
+      <div class="flex flex-wrap justify-center gap-4">
+        <button class="bg-[#5A6F21] hover:bg-[#466013] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2">
+          <img src="assets/agregar.png" alt="Agregar" class="w-5 h-5" />
+          AGREGAR
+        </button>
+
+        <button class="bg-[#5A6F21] hover:bg-[#466013] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2">
+          <span>FILTRAR BUSQUEDA</span>
+          <svg class="w-4 h-4" fill="white" viewBox="0 0 20 20"><path d="M5.5 7l4.5 4.5L14.5 7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <!-- Lista de Novedades -->
+      <div class="space-y-6 max-w-5xl mx-auto">
+        <div *ngFor="let novedad of novedades; let i = index"
+             class="border rounded-xl overflow-hidden shadow-sm">
+          
+          <!-- Cabecera -->
+          <div class="flex justify-between items-center bg-[#C2DB95] px-4 py-3">
+            <div class="flex items-center gap-3">
+              <img src="assets/Foquin.png" alt="Mascota" class="w-10 h-10" />
+              <span class="font-bold text-[#1a1a1a] text-lg">POLAR SOFT</span>
+            </div>
+            <span class="text-sm font-semibold text-gray-800">{{ novedad.hora }}</span>
+          </div>
+
+          <!-- Cuerpo -->
+          <div class="bg-white px-6 py-4 relative">
+            <h3 class="uppercase text-sm font-semibold mb-2 text-black">{{ novedad.titulo }}</h3>
+            <p class="text-sm text-gray-800">{{ novedad.descripcion }}</p>
+
+            <!-- Botones flotantes -->
+            <div class="absolute top-3 right-3 flex gap-2">
+              <button (click)="editar(i)">
+                <img src="assets/editar.png" alt="Editar" class="w-8 h-8 hover:scale-110 transition" />
+              </button>
+              <button (click)="eliminar(i)">
+                <img src="assets/borrar.png" alt="Eliminar" class="w-8 h-8 hover:scale-110 transition" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

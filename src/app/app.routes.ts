@@ -10,10 +10,17 @@ import { SensoresComponent } from './pages/Sensores/Sensores.component';
 import { NovedadesComponent } from './components/organims/Usuario/Novedades/Novedades.component';
 import { PerfilComponent } from './components/organims/Usuario/Perfil/Perfil.component';
 import { HomeComponent } from './pages/Home/Home.component';
+import { ListaUsuariosComponent } from './components/organims/Admin/Lista-Usuarios/Lista-Usuarios.component';
+import { MembresiasComponent } from './components/organims/Admin/Membresias/Membresias.component';
+import { NovedadesAdminComponent } from './components/organims/Admin/Novedades/Novedades.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'Home', component: HomeComponent },
+  { path: 'Lista-Usuarios', component: ListaUsuariosComponent },
+  { path: 'Membresias', component: MembresiasComponent},
+  { path: 'Novedades-Admin', component: NovedadesAdminComponent},
+
 
   {
     path: 'Sensores',

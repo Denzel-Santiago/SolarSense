@@ -1,0 +1,115 @@
+<div class="flex h-screen overflow-hidden">
+  <app-side-nav-Admin></app-side-nav-Admin>
+
+  <div class="flex-1 flex flex-col overflow-auto bg-gray-100">
+    <!-- Título y botón agregar -->
+    <div class="p-6 bg-[#1f3a2e] text-white flex justify-between items-center">
+      <div class="text-3xl font-bold">LISTA DE USUARIOS</div>
+      <button (click)="abrirModalNuevo()" 
+              class="px-4 py-2 bg-[#3a5e3f] hover:bg-[#4a7a4f] text-white rounded-lg flex items-center gap-2 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+        </svg>
+        Agregar Usuario
+      </button>
+    </div>
+
+
+    
+    <div class="p-6 bg-white space-y-10 flex-grow overflow-y-auto">
+
+      <!-- Tabla -->
+      <div class="w-full max-w-7xl mx-auto rounded-2xl overflow-hidden border border-[#C2DB95] shadow-md">
+        <div class="bg-[#5A6F21] px-4 py-3 text-white text-center font-bold text-lg">
+          Tabla de usuarios registrados
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm text-center text-black">
+            <thead class="bg-[#C2DB95] text-black uppercase text-xs">
+              <tr>
+                <th class="px-4 py-2">ID</th>
+                <th class="px-4 py-2">Nombre</th>
+                <th class="px-4 py-2">Correo</th>
+                <th class="px-4 py-2">Rol</th>
+                <th class="px-4 py-2">Opciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let usuario of usuarios; let i = index"
+                  [ngClass]="{ 'bg-[#F0FFCD]': i % 2 === 0, 'bg-[#C2DB95]': i % 2 !== 0 }">
+                <td class="px-4 py-2">{{ usuario.id }}</td>
+                <td class="px-4 py-2">{{ usuario.nombre }}</td>
+                <td class="px-4 py-2 text-blue-700 underline">{{ usuario.correo }}</td>
+                <td class="px-4 py-2">{{ usuario.rol }}</td>
+                <td class="px-4 py-2 flex justify-center gap-3">
+                  <button (click)="eliminarUsuario(usuario.id)">
+                    <img src="assets/borrar.png" class="w-10 h-10 hover:scale-110" />
+                  </button>
+                  <button (click)="abrirModal(usuario)">
+                    <img src="assets/editar.png" class="w-10 h-10 hover:scale-110" />
+                  </button>
+                </td>
+              </tr>
+              <tr *ngFor="let empty of [].constructor(5 - usuarios.length)">
+                <td colspan="5" class="h-12 bg-[#F0FFCD]"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div *ngIf="modalAbierto"
+     class="fixed inset-0 flex items-center justify-center z-50 pointer-events-auto backdrop-blur-sm">
+
+  <div class="bg-white p-6 rounded-lg w-full max-w-md shadow-lg border">
+    <h2 class="text-xl font-bold mb-4 text-center">{{ esNuevoUsuario ? 'Agregar Usuario' : 'Editar Usuario' }}</h2>
+
+    <form (ngSubmit)="guardarCambios()" class="space-y-4">
+      <!-- Resto del formulario permanece igual -->
+
+      <!-- Nombre -->
+      <div>
+        <label class="block font-medium">Nombre</label>
+        <input [(ngModel)]="usuarioSeleccionado.nombre" name="nombre" required
+               class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-[#C2DB95]" />
+      </div>
+
+      <!-- Correo -->
+      <div>
+        <label class="block font-medium">Correo</label>
+        <input [(ngModel)]="usuarioSeleccionado.correo" name="correo" type="email" required
+               class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-[#C2DB95]" />
+      </div>
+
+      <!-- Rol -->
+      <div>
+        <label class="block font-medium">Rol</label>
+        <select [(ngModel)]="usuarioSeleccionado.rol" name="rol" required
+                class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-[#C2DB95]">
+          <option value="Usuario">Usuario</option>
+          <option value="Administrador">Administrador</option>
+        </select>
+      </div>
+
+      <!-- Botones -->
+      <div class="flex justify-end gap-3 pt-4">
+        <button type="button"
+                (click)="cerrarModal()"
+                class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+          Cancelar
+        </button>
+        <button type="submit"
+                class="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-800">
+          Guardar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
