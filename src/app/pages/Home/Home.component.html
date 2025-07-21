@@ -1,21 +1,42 @@
 <!-- Contenedor principal -->
 <div class="bg-[#FFFFFD] text-black font-sans">
 
-  <!-- Barra de navegación -->
-  <div class="flex items-center justify-between px-8 py-4">
-    <!-- Logo y nombre -->
-    <div class="flex items-center gap-2">
-      <img src="assets/Foquin.png" alt="Logo" class="h-16 w-auto">
-      <span class="font-bold text-2xl">POLAR SOFT</span>
-    </div>
-
-    <!-- Enlaces y usuario -->
-    <div class="flex items-center gap-8">
-      <a href="#" class="hover:underline">INICIO</a>
-      <a href="#" class="hover:underline">NOTICIAS</a>
-      <img src="assets/Foquin.png" alt="Usuario" class="h-6 w-auto">
-    </div>
+<!-- Barra de navegación -->
+<div class="flex items-center justify-between px-8 py-4">
+  <!-- Logo y nombre -->
+  <div class="flex items-center gap-2">
+    <img src="assets/Foquin.png" alt="Logo" class="h-16 w-auto">
+    <span class="font-bold text-2xl">POLAR SOFT</span>
   </div>
+
+  <!-- Enlaces y usuario con RouterLink -->
+  <nav class="flex items-center gap-8">
+    <a 
+      routerLink="/" 
+      routerLinkActive="text-[#5A6F21] font-bold" 
+      [routerLinkActiveOptions]="{exact: true}"
+      class="hover:underline transition-colors duration-200 hover:text-[#5A6F21]"
+    >
+      INICIO
+    </a>
+    
+    <a 
+      routerLink="/Sensores" 
+      routerLinkActive="text-[#5A6F21] font-bold"
+      class="hover:underline transition-colors duration-200 hover:text-[#5A6F21]"
+    >
+      NOTICIAS
+    </a>
+    
+    <a routerLink="/Login" class="flex items-center">
+      <img 
+        src="assets/usuario2.png" 
+        alt="Usuario" 
+        class="h-8 w-auto hover:rotate-6 transition-transform duration-300"
+      >
+    </a>
+  </nav>
+</div>
 
   <!-- Contenido principal -->
   <div class="flex flex-col lg:flex-row items-center justify-between px-8 py-12 gap-12">
@@ -31,35 +52,336 @@
         y una interfaz visual amigable.
       </p>
       <div class="mt-6">
-        <button class="bg-[#FF5A21] text-white px-4 py-2 rounded-full hover:bg-orange-600 transition">
+        <button class="bg-[#FF5A21] text-white px-4 py-2 rounded-full hover:bg-orange-600 transition-all duration-300 hover:scale-105 transform">
           CONOCE MÁS
         </button>
       </div>
     </div>
 
-    <!-- Imagen principal -->
+    <!-- Imagen principal con animación flotante -->
     <div class="flex-1 flex justify-center">
-      <img src="assets/Foquin.png" alt="Paneles Solares" class="w-full max-w-md h-auto rounded">
+      <img src="assets/Solarsense1.png" alt="Paneles Solares" 
+           class="w-full max-w-md h-auto rounded animate-float"
+           style="animation: float 6s ease-in-out infinite">
     </div>
   </div>
 
   <!-- Sección inferior -->
   <div class="bg-[#F9F9DD] flex flex-col lg:flex-row items-center justify-around px-8 py-12 gap-8">
-    <!-- Item 1 -->
-    <div class="flex flex-col items-center">
-      <img src="assets/Foquin.png" alt="Natural" class="h-12 w-auto mb-2">
-      <span class="font-bold">NATURAL</span>
+    <!-- Item 1 con animación -->
+    <div class="flex flex-col items-center group">
+      <img src="assets/panel1.png" alt="Natural" 
+           class="h-12 w-auto mb-2 transition-all duration-500 group-hover:scale-110 group-hover:rotate-6">
+      <span class="font-bold transition-all duration-300 group-hover:text-[#5A6F21]">NATURAL</span>
     </div>
-    <!-- Item 2 -->
-    <div class="flex flex-col items-center">
-      <img src="assets/Foquin.png" alt="Precisa" class="h-12 w-auto mb-2">
-      <span class="font-bold">PRECISA</span>
+    <!-- Item 2 con animación -->
+    <div class="flex flex-col items-center group">
+      <img src="assets/nube.png" alt="Precisa" 
+           class="h-12 w-auto mb-2 transition-all duration-500 group-hover:scale-110 group-hover:-rotate-6">
+      <span class="font-bold transition-all duration-300 group-hover:text-[#5A6F21]">PRECISA</span>
     </div>
-    <!-- Item 3 -->
-    <div class="flex flex-col items-center">
-      <img src="assets/Foquin.png" alt="Eficiente" class="h-12 w-auto mb-2">
-      <span class="font-bold">EFICIENTE</span>
+    <!-- Item 3 con animación -->
+    <div class="flex flex-col items-center group">
+      <img src="assets/bateria.png" alt="Eficiente" 
+           class="h-12 w-auto mb-2 transition-all duration-500 group-hover:scale-110 group-hover:rotate-12">
+      <span class="font-bold transition-all duration-300 group-hover:text-[#5A6F21]">EFICIENTE</span>
     </div>
   </div>
 
+  <!-- Sección de características con fondo verde -->
+  <div class="bg-[#223D2A] text-white py-16 px-8">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex flex-col lg:flex-row items-center gap-12">
+        <!-- Texto descriptivo -->
+        <div class="flex-1">
+          <h2 class="text-4xl font-bold mb-8">
+            NUESTRO PRODUCTO TE OFRECE
+          </h2>
+          
+          <div class="mb-8">
+            <h3 class="text-2xl font-bold mb-4">INTERFAZ EN TIEMPO REAL</h3>
+            <p class="text-lg leading-relaxed">
+              Gracias a nuestra interfaz web moderna y visual, desarrollada con tecnología Angular, podrá ver en tiempo real datos críticos como voltaje, corriente, temperatura y humedad de sus paneles solares.
+            </p>
+          </div>
+        </div>
+        
+        <!-- Imagen con efecto de aparición -->
+        <div class="flex-1 flex justify-center">
+          <img src="assets/promo1.png" alt="Interfaz en tiempo real" 
+               class="w-full max-w-xl rounded-lg transition-all duration-1000 hover:scale-105 hover:shadow-2xl opacity-0 animate-fade-in"
+               style="animation-delay: 0.3s">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección 2: Tecnología accesible y precisa -->
+  <div class="bg-[#FFFFFD] text-black py-16 px-8">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex flex-col lg:flex-row items-center gap-12">
+        <!-- Imagen con efecto de deslizamiento -->
+        <div class="flex-1 flex justify-center">
+          <img src="assets/promo2.png" alt="Tecnología accesible" 
+               class="w-full max-w-xl transition-all duration-1000 hover:scale-105 hover:rotate-2 opacity-0 animate-slide-in-left"
+               style="animation-delay: 0.3s">
+        </div>
+        
+        <!-- Texto -->
+        <div class="flex-1">
+          <h2 class="text-4xl font-bold mb-8">
+            TECNOLOGÍA ACCESIBLE Y PRECISA
+          </h2>
+          <p class="text-lg leading-relaxed">
+            Desarrollamos un sistema inteligente y accesible basado en sensores económicos, Raspberry Pi y protocolos de bajo consumo como MQTT que permite detectar condiciones ambientales adversas que afectan la producción de energía, incluso en zonas remotas.
+          </p>
+          
+          <!-- Lista de características -->
+          <ul class="mt-6 space-y-3">
+            <li class="flex items-start gap-3">
+              <span class="text-[#5A6F21] font-bold">•</span>
+              <span>Sensores de alta precisión y bajo costo</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-[#5A6F21] font-bold">•</span>
+              <span>Tecnología Raspberry Pi para procesamiento local</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-[#5A6F21] font-bold">•</span>
+              <span>Protocolo MQTT para bajo consumo energético</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-[#5A6F21] font-bold">•</span>
+              <span>Funcionamiento en zonas remotas sin conexión estable</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección 3: Sostenibilidad -->
+  <div class="bg-[#223D2A] text-white py-16 px-8">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex flex-col lg:flex-row-reverse items-center gap-12">
+        <!-- Imagen con efecto de zoom suave -->
+        <div class="flex-1 flex justify-center">
+          <img src="assets/promo3.png" alt="Sostenibilidad" 
+               class="w-full max-w-xl rounded-lg transition-all duration-1000 hover:scale-105 opacity-0 animate-fade-in"
+               style="animation-delay: 0.5s">
+        </div>
+        
+        <!-- Texto -->
+        <div class="flex-1">
+          <h2 class="text-4xl font-bold mb-8">
+            SOSTENIBILIDAD
+          </h2>
+          <p class="text-lg leading-relaxed">
+            Cada dato cuenta cuando se trata de cuidar el planeta. SolarSense promueve un uso eficiente de la energía solar, optimizando el rendimiento de tus paneles y reduciendo desperdicios. Más que una herramienta, es tu aliado en la lucha por un futuro sostenible y consciente.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección 4: Notificaciones inteligentes -->
+  <div class="bg-[#FFFFFD] text-black py-16 px-8">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex flex-col lg:flex-row items-center gap-12">
+        <!-- Imagen con efecto de deslizamiento derecho -->
+        <div class="flex-1 flex justify-center">
+          <img src="assets/promo4.png" alt="Notificaciones inteligentes" 
+               class="w-full max-w-xl transition-all duration-1000 hover:scale-105 opacity-0 animate-slide-in-right"
+               style="animation-delay: 0.3s">
+        </div>
+        
+        <!-- Texto -->
+        <div class="flex-1">
+          <h2 class="text-4xl font-bold mb-8 text-[#223D2A]">
+            NOSOTROS
+          </h2>
+          <p class="text-lg leading-relaxed">
+            En PolarSoft desarrollamos soluciones tecnológicas con impacto real. Nos apasiona combinar innovación, sostenibilidad y accesibilidad en cada uno de nuestros proyectos. Desde plataformas inteligentes hasta sistemas IoT, nuestro compromiso es claro: crear tecnología útil, moderna y pensada para mejorar la vida de las personas.
+            Confía en una empresa joven, creativa y con visión de futuro. Confía en PolarSoft.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estilos para las animaciones -->
+  <style>
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+      100% { transform: translateY(0px); }
+    }
+    
+    @keyframes fade-in {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    
+    @keyframes slide-in-left {
+      from { opacity: 0; transform: translateX(-50px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes slide-in-right {
+      from { opacity: 0; transform: translateX(50px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .animate-float { animation: float 6s ease-in-out infinite; }
+    .animate-fade-in { animation: fade-in 1s ease-out forwards; }
+    .animate-slide-in-left { animation: slide-in-left 0.8s ease-out forwards; }
+    .animate-slide-in-right { animation: slide-in-right 0.8s ease-out forwards; }
+  </style>
 </div>
+
+<!-- Footer -->
+<footer class="bg-[#223D2A] text-white pt-12 pb-6 px-8">
+  <div class="max-w-6xl mx-auto">
+    <!-- Contenido principal del footer -->
+    <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+      <!-- Columna izquierda - Solo la imagen de la mascota -->
+      <div class="flex justify-center md:justify-start">
+        <img src="assets/Foquin.png" alt="Logo Polar Soft" class="h-50 w-50">
+      </div>
+
+      <!-- Columna central - Texto legal -->
+      <div class="flex flex-col items-center text-center">
+        <span class="font-bold text-2xl mb-4">POLAR SOFT INDUSTRIES</span>
+        <div class="mb-2">
+          <a href="#" class="hover:underline mx-2">TÉRMINOS Y CONDICIONES</a>
+          <a href="#" class="hover:underline mx-2">AVISO DE PRIVACIDAD</a>
+        </div>
+        <p class="text-sm">© 2025 POLARSOFT. TODOS LOS DERECHOS RESERVADOS.</p>
+      </div>
+
+      <!-- Columna derecha - Redes sociales -->
+      <div class="flex justify-center md:justify-end">
+        <ul class="wrapper">
+          <li class="icon facebook">
+            <a href="https://www.facebook.com/share/1JjHr1ku9Q/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" class="flex justify-center items-center w-full h-full">
+              <span class="tooltip">Facebook</span>
+              <svg viewBox="0 0 320 512" height="1.2em" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"></path>
+              </svg>
+            </a>
+          </li>
+          <li class="icon twitter">
+            <a href="https://x.com/fokinindustries?s=21" target="_blank" rel="noopener noreferrer" class="flex justify-center items-center w-full h-full">
+              <span class="tooltip">Twitter</span>
+              <svg height="1.8em" fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" class="twitter">
+                <path d="M42,12.429c-1.323,0.586-2.746,0.977-4.247,1.162c1.526-0.906,2.7-2.351,3.251-4.058c-1.428,0.837-3.01,1.452-4.693,1.776C34.967,9.884,33.05,9,30.926,9c-4.08,0-7.387,3.278-7.387,7.32c0,0.572,0.067,1.129,0.193,1.67c-6.138-0.308-11.582-3.226-15.224-7.654c-0.64,1.082-1,2.349-1,3.686c0,2.541,1.301,4.778,3.285,6.096c-1.211-0.037-2.351-0.374-3.349-0.914c0,0.022,0,0.055,0,0.086c0,3.551,2.547,6.508,5.923,7.181c-0.617,0.169-1.269,0.263-1.941,0.263c-0.477,0-0.942-0.054-1.392-0.135c0.94,2.902,3.667,5.023,6.898,5.086c-2.528,1.96-5.712,3.134-9.174,3.134c-0.598,0-1.183-0.034-1.761-0.104C9.268,36.786,13.152,38,17.321,38c13.585,0,21.017-11.156,21.017-20.834c0-0.317-0.01-0.633-0.025-0.945C39.763,15.197,41.013,13.905,42,12.429"></path>
+              </svg>
+            </a>
+          </li>
+          <li class="icon instagram">
+            <a href="https://www.instagram.com/fokin_industries?igsh=MTl3czdwNnpudTZyMw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" class="flex justify-center items-center w-full h-full">
+              <span class="tooltip">Instagram</span>
+              <svg xmlns="http://www.w3.org/2000/svg" height="1.2em" fill="currentColor" class="bi bi-instagram" viewBox="0 0 16 16">
+                <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z"></path>
+              </svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Estilos para las redes sociales -->
+<style>
+  .wrapper {
+    display: inline-flex;
+    list-style: none;
+    padding-top: 0;
+    font-family: "Poppins", sans-serif;
+    justify-content: center;
+  }
+
+  .wrapper .icon {
+    position: relative;
+    background: #000000;
+    border-radius: 50%;
+    margin: 10px;
+    width: 50px;
+    height: 50px;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .wrapper .icon a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .wrapper .tooltip {
+    position: absolute;
+    top: 0;
+    font-size: 14px;
+    background: #fff;
+    color: #fff;
+    padding: 5px 8px;
+    border-radius: 5px;
+    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .wrapper .tooltip::before {
+    position: absolute;
+    content: "";
+    height: 8px;
+    width: 8px;
+    background: #fff;
+    bottom: -3px;
+    left: 50%;
+    transform: translate(-50%) rotate(45deg);
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .wrapper .icon:hover .tooltip {
+    top: -45px;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .wrapper .icon:hover span,
+  .wrapper .icon:hover .tooltip {
+    text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.1);
+  }
+
+  .wrapper .facebook:hover,
+  .wrapper .facebook:hover .tooltip,
+  .wrapper .facebook:hover .tooltip::before {
+    background: #1877F2;
+    color: #fff;
+  }
+
+  .wrapper .twitter:hover,
+  .wrapper .twitter:hover .tooltip,
+  .wrapper .twitter:hover .tooltip::before {
+    background: #1DA1F2;
+    color: #fff;
+  }
+
+  .wrapper .instagram:hover,
+  .wrapper .instagram:hover .tooltip,
+  .wrapper .instagram:hover .tooltip::before {
+    background: #E4405F;
+    color: #fff;
+  }
+</style>

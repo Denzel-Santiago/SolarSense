@@ -15,8 +15,8 @@ import { MembresiasComponent } from './components/organims/Admin/Membresias/Memb
 import { NovedadesAdminComponent } from './components/organims/Admin/Novedades/Novedades.component';
 
 export const routes: Routes = [
-  { path: '', component: LoginComponent },
-  { path: 'Home', component: HomeComponent },
+  { path: 'Login', component: LoginComponent },
+  { path: '', component: HomeComponent },
   { path: 'Lista-Usuarios', component: ListaUsuariosComponent },
   { path: 'Membresias', component: MembresiasComponent},
   { path: 'Novedades-Admin', component: NovedadesAdminComponent},

@@ -1,10 +1,11 @@
-//login.component.ts
+// home.component.ts
 import { Component } from '@angular/core';
+import { RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'app-Home',
-  templateUrl: './Home.component.html',
-  imports: []
+  selector: 'app-home',
+  standalone: true,
+  imports: [RouterLink, RouterLinkActive, RouterModule],
+  templateUrl: './home.component.html',
 })
 export class HomeComponent {}
-

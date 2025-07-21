@@ -38,8 +38,8 @@ export class SideNavAdminComponent {
       this.router.navigate(['/Lista-Usuarios']);
     } else if (item.label === 'Membresias') {
       this.router.navigate(['Membresias']);
-    } else if (item.label === 'Humedad') {
-      this.router.navigate(['Sensores/']);
+    } else if (item.label === 'Novedades') {
+      this.router.navigate(['Novedades-Admin']);
     } else if (item.label === 'Temperatura') {
       this.router.navigate(['Sensores/']);
     } else if (item.label === 'Presion Atmosferica') {

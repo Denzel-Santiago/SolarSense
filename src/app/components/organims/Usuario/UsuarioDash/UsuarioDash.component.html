@@ -1,26 +1,49 @@
 <div class="flex h-screen overflow-hidden">
 
   <app-side-nav></app-side-nav>
-  
+
   <div class="flex-1 flex flex-col overflow-auto bg-gray-100">
-    
+
+    <!-- Título del Dashboard -->
     <div class="p-6 bg-[#1c392c] text-white text-3xl font-bold">
       DASHBOARD
     </div>
 
-    <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 bg-white flex-grow">
-      
+    <!-- Mini tarjetas de valores actuales -->
+    <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-white">
+      <!-- Temperatura -->
+      <div class="p-4 bg-purple-100 text-purple-800 rounded-xl shadow text-center font-semibold">
+        🌡️ Temperatura actual: {{ temperaturaActual }} °C
+      </div>
+
+      <!-- Humedad -->
+      <div class="p-4 bg-blue-100 text-blue-800 rounded-xl shadow text-center font-semibold">
+        💧 Humedad actual: {{ humedadActual }} %
+      </div>
+
+      <!-- Presión -->
+      <div class="p-4 bg-orange-100 text-orange-800 rounded-xl shadow text-center font-semibold">
+        📈 Presión actual: {{ presionActual }} hPa
+      </div>
+
+      <!-- Voltaje -->
+      <div class="p-4 bg-green-100 text-green-800 rounded-xl shadow text-center font-semibold">
+        ⚡ Voltaje actual: {{ voltajeActual }} V
+      </div>
+    </div>
+
+    <!-- Gráficas en tiempo real -->
+    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 bg-white flex-grow">
+
       <p-chart [type]="voltajeChart.type" [data]="voltajeChart.data" class="w-full h-[300px]"></p-chart>
 
-      
       <p-chart [type]="presionChart.type" [data]="presionChart.data" class="w-full h-[300px]"></p-chart>
 
-      
       <p-chart [type]="humedadChart.type" [data]="humedadChart.data" class="w-full h-[300px]"></p-chart>
 
-      
       <p-chart [type]="temperaturaChart.type" [data]="temperaturaChart.data" class="w-full h-[300px]"></p-chart>
-    </div>
-  </div>
 
+    </div>
+
+  </div>
 </div>
