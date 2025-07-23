@@ -1,3 +1,4 @@
+<!--login-form.component.html-->
 <!-- ENCABEZADO -->
 <div class="bg-[#FFFFFD] text-black font-sans">
   <div class="flex items-center justify-between px-4 md:px-8 py-4 flex-wrap">
@@ -66,10 +67,11 @@
             <button class="flip-card__btn" type="button" (click)="onLogin()">Continue</button>
           </form>
 
-          <div class="google-btn-container" (click)="preventFlip($event)">
-            <div id="googleLogin" class="flip-card__btn google-btn">
+          <div class="google-btn-container">
+            <div id="googleLogin" class="flip-card__btn google-btn" (click)="onGoogleClick($event)">
               <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="google-icon" />
               Continue with Google
+              <div *ngIf="!googleInitialized" class="spinner"></div>
             </div>
           </div>
         </div>

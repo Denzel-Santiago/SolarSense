@@ -4,7 +4,7 @@ import { NgClass, NgFor, NgIf } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { SideNavAdminComponent } from '../sidenavAdmin/sidenavAdmin.component';
-import { User } from '../../../../../Interface/Membresia'; // ajusta si tu path es diferente
+import { User } from '../../../../Interface/Membresia'; // ajusta si tu path es diferente
 
 @Component({
   selector: 'app-Membresias',

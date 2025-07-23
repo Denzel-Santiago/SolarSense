@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { User } from '../../Interface/Membresia'; 
+import { User } from '../Interface/Membresia'; 
 
 @Injectable({
   providedIn: 'root',

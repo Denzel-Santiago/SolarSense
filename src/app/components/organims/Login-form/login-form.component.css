@@ -1,9 +1,15 @@
+/*login-form.component.css*/
+body{
+    padding: auto;
+    margin: 0;
+    background-color: #b0b0b0;
+}
+
 .wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: #b0b0b0;
+  height: 83vh;
 
   --input-focus: #1f3d27;
   --font-color: #1f3d27;
@@ -15,7 +21,7 @@
 
 /* switch card */
 .switch {
-  transform: translateY(-200px);
+  transform: translateY(-220px);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -196,18 +202,62 @@
 }
 
 /* Google Button */
+.google-btn-container {
+  width: 320px;
+  margin: 0 auto;
+}
+
 .google-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #1f3d27;
+  background-color: var(--main-color);
   color: white;
   border: 2px solid var(--main-color);
   box-shadow: 4px 4px var(--main-color);
+  width: 100%;
+  height: 50px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.google-btn:hover {
+  opacity: 0.9;
+}
+
+.google-btn:active {
+  box-shadow: 0px 0px var(--main-color);
+  transform: translate(3px, 3px);
 }
 
 .google-icon {
   width: 20px;
   height: 20px;
   margin-right: 10px;
+  filter: brightness(0) invert(1);
+}
+
+
+/* Agrega al final de tu CSS */
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-left: 10px;
+  border: 3px solid rgba(255,255,255,.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.google-btn[disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
