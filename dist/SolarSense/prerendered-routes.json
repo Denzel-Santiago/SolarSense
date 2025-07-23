@@ -1,7 +1,10 @@
 {
   "routes": {
     "/": {},
-    "/Home": {},
+    "/Lista-Usuarios": {},
+    "/Login": {},
+    "/Membresias": {},
+    "/Novedades-Admin": {},
     "/Sensores": {},
     "/Sensores/Humedad": {},
     "/Sensores/Novedades": {},
