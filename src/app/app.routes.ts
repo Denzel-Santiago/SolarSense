@@ -13,6 +13,7 @@ import { HomeComponent } from './pages/Home/Home.component';
 import { ListaUsuariosComponent } from './components/organims/Admin/Lista-Usuarios/Lista-Usuarios.component';
 import { MembresiasComponent } from './components/organims/Admin/Membresias/Membresias.component';
 import { NovedadesAdminComponent } from './components/organims/Admin/Novedades/Novedades.component';
+import { NoticiasComponent } from './pages/Noticias/Noticias.component';
 
 export const routes: Routes = [
   { path: 'Login', component: LoginComponent },
@@ -20,6 +21,8 @@ export const routes: Routes = [
   { path: 'Lista-Usuarios', component: ListaUsuariosComponent },
   { path: 'Membresias', component: MembresiasComponent},
   { path: 'Novedades-Admin', component: NovedadesAdminComponent},
+  { path: 'Noticias', component: NoticiasComponent},
+
 
 
   {

@@ -42,12 +42,6 @@ export class SideNavAdminComponent {
       this.router.navigate(['Novedades-Admin']);
     } else if (item.label === 'Temperatura') {
       this.router.navigate(['Sensores/']);
-    } else if (item.label === 'Presion Atmosferica') {
-      this.router.navigate(['Sensores/']);
-    } else if (item.label === 'Novedades') {
-      this.router.navigate(['Sensores/']);
-    }else if (item.label === 'Perfil') {
-      this.router.navigate(['Sensores/']);
     }
     
     

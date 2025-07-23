@@ -2,31 +2,30 @@
   <app-side-nav></app-side-nav>
 
   <div class="flex-1 flex flex-col overflow-auto bg-gray-100">
+    <!-- Título -->
     <div class="p-6 bg-[#1c392c] text-white text-3xl font-bold">
       SENSOR DE PRESIÓN ATMOSFÉRICA
     </div>
 
+    <!-- Gráfica de presión + tarjetas -->
     <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 bg-white flex-grow">
-      <!-- Gráfica centrada -->
+      <!-- Gráfica de presión -->
       <div class="col-span-2">
         <p-chart [type]="presionChart.type" [data]="presionChart.data" class="w-full h-[300px]"></p-chart>
       </div>
 
-      <!-- Tarjetas verticales -->
+      <!-- Tarjetas informativas -->
       <div class="flex flex-col gap-4">
-        <!-- Estado del sensor -->
         <div [ngClass]="sensorConectado ? 'bg-green-200' : 'bg-red-200'" class="p-4 rounded-xl shadow text-center font-semibold">
           <span *ngIf="sensorConectado">Sensor Conectado ✅</span>
           <span *ngIf="!sensorConectado">Sensor Desconectado ❌</span>
         </div>
 
-        <!-- Presión actual -->
         <div class="bg-blue-100 p-4 rounded-xl shadow text-center">
           <div class="text-sm text-gray-600">Presión Actual</div>
           <div class="text-2xl font-bold">{{ presionActual }} hPa</div>
         </div>
 
-        <!-- Probabilidad de lluvia -->
         <div 
           [ngClass]="{
             'bg-red-200': probabilidadLluvia === 'Alta',
@@ -38,6 +37,21 @@
           <div class="text-sm text-gray-600">Probabilidad de lluvia</div>
           <div class="text-xl font-bold">{{ probabilidadLluvia }}</div>
         </div>
+      </div>
+    </div>
+
+    <!-- Gráfica de distribución gaussiana -->
+    <div class="p-6 bg-white">
+      <div class="bg-white rounded-xl p-4 shadow h-[300px]">
+        <h2 class="text-lg font-semibold mb-4 text-gray-800">
+          Distribución Gaussiana de la Presión (últimas 24 horas)
+        </h2>
+        <p-chart *ngIf="distribucionChart" 
+                 [type]="distribucionChart.type" 
+                 [data]="distribucionChart.data" 
+                 [options]="distribucionChart.options" 
+                 class="w-full h-[300px]">
+        </p-chart>
       </div>
     </div>
   </div>

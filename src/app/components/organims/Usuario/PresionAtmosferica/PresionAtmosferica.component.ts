@@ -2,6 +2,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { ChartModule } from 'primeng/chart';
 import { SideNavComponent } from '../../sidenav/sidenav.component';
 import { WsPresionService } from '../../../../services/Presion.service';
+import { WsHumedadService } from '../../../../services/Humedad.service';
+import { PresionGausService } from '../../../../services/PresionGaus.service';
 import { NgClass, NgIf } from '@angular/common';
 
 @Component({
@@ -12,24 +14,32 @@ import { NgClass, NgIf } from '@angular/common';
 })
 export class PresionAtmosfericaComponent implements OnInit {
   presionChart: any;
-  presionActual = 0;
+  distribucionChart: any;
+
+  humedadActual: number = 0;
+  presionActual: number = 0;
   sensorConectado = false;
-  humedadActual = 75; // Simulado, reemplazar si se integra con sensor real
-  probabilidadLluvia = 'Desconocida';
+  probabilidadLluvia: string = 'Calculando...';
 
-  private wsService = inject(WsPresionService);
+  private wsPresionService = inject(WsPresionService);
+  private wsHumedadService = inject(WsHumedadService);
+  private gausService = inject(PresionGausService);
+
   private maxPuntos = 20;
-
   private etiquetas: string[] = [];
   private presiones: number[] = [];
   private timeoutRef: any;
 
   ngOnInit() {
-    this.initChart();
+    this.initPresionChart();
+    this.initDistribucionChart();
 
-    this.wsService.getMessages().subscribe((data) => {
+    // WebSocket de presión
+    this.wsPresionService.getMessages().subscribe((data) => {
+      if (!data?.presion || !data?.timestamp) return;
+
       const presion = data.presion;
-      const timestamp = new Date(data.timestamp * 5000).toLocaleTimeString();
+      const timestamp = new Date(data.timestamp * 1000).toLocaleTimeString();
 
       this.presionActual = presion;
       this.sensorConectado = true;
@@ -38,10 +48,6 @@ export class PresionAtmosfericaComponent implements OnInit {
       this.timeoutRef = setTimeout(() => {
         this.sensorConectado = false;
       }, 5000);
-
-      // Simulación de humedad (reemplaza por valor real si puedes)
-      this.humedadActual = 75;
-      this.probabilidadLluvia = this.calcularProbabilidadLluvia(this.humedadActual, this.presionActual);
 
       this.etiquetas.push(timestamp);
       this.presiones.push(presion);
@@ -62,15 +68,82 @@ export class PresionAtmosfericaComponent implements OnInit {
               borderColor: '#FFA726',
               backgroundColor: 'rgba(255, 167, 38, 0.2)',
               fill: true,
-              tension: 0.3
+              tension: 0.3,
+            },
+          ],
+        },
+      };
+
+      this.probabilidadLluvia = this.calcularProbabilidadLluvia(this.humedadActual, this.presionActual);
+    });
+
+    // WebSocket de humedad
+    this.wsHumedadService.getMessages().subscribe((data) => {
+      if (data?.humedad !== undefined) {
+        this.humedadActual = data.humedad;
+        this.probabilidadLluvia = this.calcularProbabilidadLluvia(this.humedadActual, this.presionActual);
+      }
+    });
+
+    // Distribución Gaussiana
+    this.gausService.fetchDistribution(1).subscribe((dist) => {
+      console.log('Distribución recibida:', dist);
+      if (!dist?.x?.length || !dist?.y?.length) return;
+
+      this.distribucionChart = {
+        type: 'line',
+        data: {
+          labels: dist.x.map((val) => val.toFixed(2)),
+          datasets: [
+            {
+              label: 'Distribución de Presión',
+              data: dist.y,
+              borderColor: '#42A5F5',
+              backgroundColor: 'rgba(66, 165, 245, 0.2)',
+              fill: true,
+              tension: 0.4,
+              pointRadius: 0
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            title: {
+              display: true,
+              text: `Distribución Normal — Media: ${dist.mean.toFixed(2)}, Desv. Estándar: ${dist.std.toFixed(2)}`,
+              font: { size: 16 }
+            },
+            tooltip: {
+              callbacks: {
+                label: (context: any) => `Probabilidad: ${context.parsed.y.toFixed(4)}`
+              }
             }
-          ]
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Presión (hPa)',
+                font: { size: 14, weight: 'bold' }
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Densidad de Probabilidad',
+                font: { size: 14, weight: 'bold' }
+              },
+              beginAtZero: true
+            }
+          }
         }
       };
     });
   }
 
-  initChart() {
+  initPresionChart() {
     this.presionChart = {
       type: 'line',
       data: {
@@ -82,10 +155,28 @@ export class PresionAtmosfericaComponent implements OnInit {
             borderColor: '#FFA726',
             backgroundColor: 'rgba(255, 167, 38, 0.2)',
             fill: true,
-            tension: 0.3
-          }
-        ]
-      }
+            tension: 0.3,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+      },
+    };
+  }
+
+  initDistribucionChart() {
+    this.distribucionChart = {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+      },
     };
   }
 

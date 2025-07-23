@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import Swal from 'sweetalert2';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 declare global {
   interface Window {
@@ -13,7 +14,7 @@ declare global {
 @Component({
   selector: 'app-login-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, FormsModule, HttpClientModule,RouterLinkActive,RouterLink],
   templateUrl: './login-form.component.html',
   styleUrls: ['./login-form.component.css'],
 })
@@ -29,6 +30,9 @@ export class loginFormComponent implements AfterViewInit {
     password: '',
     confirmPassword: ''
   };
+
+  menuAbierto = false;
+
 
   constructor(private http: HttpClient) {}
 

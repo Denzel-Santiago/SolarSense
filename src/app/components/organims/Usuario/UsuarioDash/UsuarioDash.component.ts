@@ -131,10 +131,18 @@ this.temperaturaSub = this.wsTemperatura.getMessages().subscribe((data) => {
   }
 
   updateChart(chart: any, dataArray: number[], label: string) {
-    chart.data.labels = [...this.labels];
-    chart.data.datasets[0].data = [...dataArray];
-    chart.data.datasets[0].label = label;
-  }
+  chart.data = {
+    ...chart.data,
+    labels: [...this.labels],
+    datasets: [
+      {
+        ...chart.data.datasets[0],
+        label: label,
+        data: [...dataArray],
+      },
+    ],
+  };
+}
 
   ngOnDestroy(): void {
     this.voltajeSub?.unsubscribe();

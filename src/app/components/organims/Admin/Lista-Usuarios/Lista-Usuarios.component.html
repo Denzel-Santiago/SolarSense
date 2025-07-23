@@ -14,14 +14,12 @@
       </button>
     </div>
 
-
-    
     <div class="p-6 bg-white space-y-10 flex-grow overflow-y-auto">
 
-      <!-- Tabla -->
+      <!-- TABLA USUARIOS NORMALES -->
       <div class="w-full max-w-7xl mx-auto rounded-2xl overflow-hidden border border-[#C2DB95] shadow-md">
         <div class="bg-[#5A6F21] px-4 py-3 text-white text-center font-bold text-lg">
-          Tabla de usuarios registrados
+          Usuarios Normales
         </div>
 
         <div class="overflow-x-auto">
@@ -36,7 +34,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let usuario of usuarios; let i = index"
+              <tr *ngFor="let usuario of usuariosNormales; let i = index"
                   [ngClass]="{ 'bg-[#F0FFCD]': i % 2 === 0, 'bg-[#C2DB95]': i % 2 !== 0 }">
                 <td class="px-4 py-2">{{ usuario.id }}</td>
                 <td class="px-4 py-2">{{ usuario.nombre }}</td>
@@ -51,7 +49,45 @@
                   </button>
                 </td>
               </tr>
-              <tr *ngFor="let empty of [].constructor(5 - usuarios.length)">
+              <tr *ngFor="let empty of filasVaciasNormales">
+                <td colspan="5" class="h-12 bg-[#F0FFCD]"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TABLA USUARIOS GOOGLE -->
+      <div class="w-full max-w-7xl mx-auto rounded-2xl overflow-hidden border border-[#C2DB95] shadow-md">
+        <div class="bg-[#5A6F21] px-4 py-3 text-white text-center font-bold text-lg">
+          Usuarios Google
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm text-center text-black">
+            <thead class="bg-[#C2DB95] text-black uppercase text-xs">
+              <tr>
+                <th class="px-4 py-2">ID</th>
+                <th class="px-4 py-2">Nombre</th>
+                <th class="px-4 py-2">Correo</th>
+                <th class="px-4 py-2">Rol</th>
+                <th class="px-4 py-2">Opciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let usuario of usuariosGoogle; let i = index"
+                  [ngClass]="{ 'bg-[#F0FFCD]': i % 2 === 0, 'bg-[#C2DB95]': i % 2 !== 0 }">
+                <td class="px-4 py-2">{{ usuario.id }}</td>
+                <td class="px-4 py-2">{{ usuario.nombre }}</td>
+                <td class="px-4 py-2 text-blue-700 underline">{{ usuario.correo }}</td>
+                <td class="px-4 py-2">{{ usuario.rol }}</td>
+                <td class="px-4 py-2 flex justify-center gap-3">
+                  <button (click)="eliminarUsuario(usuario.id)">
+                    <img src="assets/borrar.png" class="w-10 h-10 hover:scale-110" />
+                  </button>
+                </td>
+              </tr>
+              <tr *ngFor="let empty of filasVaciasGoogle">
                 <td colspan="5" class="h-12 bg-[#F0FFCD]"></td>
               </tr>
             </tbody>
@@ -65,28 +101,22 @@
 <!-- Modal -->
 <div *ngIf="modalAbierto"
      class="fixed inset-0 flex items-center justify-center z-50 pointer-events-auto backdrop-blur-sm">
-
   <div class="bg-white p-6 rounded-lg w-full max-w-md shadow-lg border">
     <h2 class="text-xl font-bold mb-4 text-center">{{ esNuevoUsuario ? 'Agregar Usuario' : 'Editar Usuario' }}</h2>
 
     <form (ngSubmit)="guardarCambios()" class="space-y-4">
-      <!-- Resto del formulario permanece igual -->
-
-      <!-- Nombre -->
       <div>
         <label class="block font-medium">Nombre</label>
         <input [(ngModel)]="usuarioSeleccionado.nombre" name="nombre" required
                class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-[#C2DB95]" />
       </div>
 
-      <!-- Correo -->
       <div>
         <label class="block font-medium">Correo</label>
         <input [(ngModel)]="usuarioSeleccionado.correo" name="correo" type="email" required
                class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-[#C2DB95]" />
       </div>
 
-      <!-- Rol -->
       <div>
         <label class="block font-medium">Rol</label>
         <select [(ngModel)]="usuarioSeleccionado.rol" name="rol" required
@@ -96,10 +126,8 @@
         </select>
       </div>
 
-      <!-- Botones -->
       <div class="flex justify-end gap-3 pt-4">
-        <button type="button"
-                (click)="cerrarModal()"
+        <button type="button" (click)="cerrarModal()"
                 class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
           Cancelar
         </button>
@@ -111,5 +139,3 @@
     </form>
   </div>
 </div>
-
-

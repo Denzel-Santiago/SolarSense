@@ -11,37 +11,58 @@
 
     <!-- Mini tarjetas de valores actuales -->
     <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-white">
+      
       <!-- Temperatura -->
-      <div class="p-4 bg-purple-100 text-purple-800 rounded-xl shadow text-center font-semibold">
-        🌡️ Temperatura actual: {{ temperaturaActual }} °C
+      <div class="p-4 bg-purple-100 text-purple-800 rounded-xl shadow-md text-center font-semibold">
+        🌡️ <div class="text-sm">Temperatura actual</div>
+        <div class="text-2xl">{{ temperaturaActual }} °C</div>
       </div>
 
       <!-- Humedad -->
-      <div class="p-4 bg-blue-100 text-blue-800 rounded-xl shadow text-center font-semibold">
-        💧 Humedad actual: {{ humedadActual }} %
+      <div class="p-4 bg-blue-100 text-blue-800 rounded-xl shadow-md text-center font-semibold">
+        💧 <div class="text-sm">Humedad actual</div>
+        <div class="text-2xl">{{ humedadActual }} %</div>
       </div>
 
       <!-- Presión -->
-      <div class="p-4 bg-orange-100 text-orange-800 rounded-xl shadow text-center font-semibold">
-        📈 Presión actual: {{ presionActual }} hPa
+      <div class="p-4 bg-orange-100 text-orange-800 rounded-xl shadow-md text-center font-semibold">
+        📈 <div class="text-sm">Presión actual</div>
+        <div class="text-2xl">{{ presionActual }} hPa</div>
       </div>
 
       <!-- Voltaje -->
-      <div class="p-4 bg-green-100 text-green-800 rounded-xl shadow text-center font-semibold">
-        ⚡ Voltaje actual: {{ voltajeActual }} V
+      <div class="p-4 bg-green-100 text-green-800 rounded-xl shadow-md text-center font-semibold">
+        ⚡ <div class="text-sm">Voltaje actual</div>
+        <div class="text-2xl">{{ voltajeActual }} V</div>
       </div>
     </div>
 
     <!-- Gráficas en tiempo real -->
     <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 bg-white flex-grow">
 
-      <p-chart [type]="voltajeChart.type" [data]="voltajeChart.data" class="w-full h-[300px]"></p-chart>
+      <!-- Voltaje -->
+      <div class="bg-white rounded-xl shadow-md p-4">
+        <h2 class="text-lg font-semibold mb-2 text-gray-700">Voltaje</h2>
+        <p-chart [type]="voltajeChart.type" [data]="voltajeChart.data" class="w-full h-[300px]"></p-chart>
+      </div>
 
-      <p-chart [type]="presionChart.type" [data]="presionChart.data" class="w-full h-[300px]"></p-chart>
+      <!-- Presión -->
+      <div class="bg-white rounded-xl shadow-md p-4">
+        <h2 class="text-lg font-semibold mb-2 text-gray-700">Presión</h2>
+        <p-chart [type]="presionChart.type" [data]="presionChart.data" class="w-full h-[300px]"></p-chart>
+      </div>
 
-      <p-chart [type]="humedadChart.type" [data]="humedadChart.data" class="w-full h-[300px]"></p-chart>
+      <!-- Humedad -->
+      <div class="bg-white rounded-xl shadow-md p-4">
+        <h2 class="text-lg font-semibold mb-2 text-gray-700">Humedad</h2>
+        <p-chart [type]="humedadChart.type" [data]="humedadChart.data" class="w-full h-[300px]"></p-chart>
+      </div>
 
-      <p-chart [type]="temperaturaChart.type" [data]="temperaturaChart.data" class="w-full h-[300px]"></p-chart>
+      <!-- Temperatura -->
+      <div class="bg-white rounded-xl shadow-md p-4">
+        <h2 class="text-lg font-semibold mb-2 text-gray-700">Temperatura</h2>
+        <p-chart [type]="temperaturaChart.type" [data]="temperaturaChart.data" class="w-full h-[300px]"></p-chart>
+      </div>
 
     </div>
 

@@ -1,43 +1,53 @@
-<!-- Contenedor principal -->
 <div class="bg-[#FFFFFD] text-black font-sans">
+  <!-- ENCABEZADO RESPONSIVO -->
+  <div class="flex items-center justify-between px-4 md:px-8 py-4 flex-wrap">
+    <div class="flex items-center gap-2">
+      <img src="assets/Foquin.png" alt="Logo" class="h-16 w-auto">
+      <span class="font-bold text-2xl">POLAR SOFT</span>
+    </div>
 
-<!-- Barra de navegación -->
-<div class="flex items-center justify-between px-8 py-4">
-  <!-- Logo y nombre -->
-  <div class="flex items-center gap-2">
-    <img src="assets/Foquin.png" alt="Logo" class="h-16 w-auto">
-    <span class="font-bold text-2xl">POLAR SOFT</span>
+    <!-- Botón hamburguesa (móvil) -->
+    <button 
+      class="md:hidden text-black text-3xl" 
+      (click)="menuAbierto = !menuAbierto"
+      aria-label="Abrir menú"
+    >
+      ☰
+    </button>
+
+    <!-- Navegación -->
+    <nav 
+      class="w-full md:w-auto md:flex md:items-center md:gap-8 mt-4 md:mt-0"
+      [ngClass]="{ 'hidden': !menuAbierto, 'block': menuAbierto }"
+    >
+      <div class="flex flex-col md:flex-row md:items-center md:gap-8">
+        <a 
+          routerLink="/" 
+          routerLinkActive="text-[#5A6F21] font-bold" 
+          [routerLinkActiveOptions]="{exact: true}"
+          class="hover:underline transition-colors duration-200 hover:text-[#5A6F21] py-1 md:py-0"
+        >
+          INICIO
+        </a>
+        
+        <a 
+          routerLink="/Noticias" 
+          routerLinkActive="text-[#5A6F21] font-bold"
+          class="hover:underline transition-colors duration-200 hover:text-[#5A6F21] py-1 md:py-0"
+        >
+          NOTICIAS
+        </a>
+
+        <a routerLink="/Login" class="flex justify-center mt-2 md:mt-0">
+          <img 
+            src="assets/usuario2.png" 
+            alt="Usuario" 
+            class="h-8 w-auto hover:rotate-6 transition-transform duration-300"
+          >
+        </a>
+      </div>
+    </nav>
   </div>
-
-  <!-- Enlaces y usuario con RouterLink -->
-  <nav class="flex items-center gap-8">
-    <a 
-      routerLink="/" 
-      routerLinkActive="text-[#5A6F21] font-bold" 
-      [routerLinkActiveOptions]="{exact: true}"
-      class="hover:underline transition-colors duration-200 hover:text-[#5A6F21]"
-    >
-      INICIO
-    </a>
-    
-    <a 
-      routerLink="/Sensores" 
-      routerLinkActive="text-[#5A6F21] font-bold"
-      class="hover:underline transition-colors duration-200 hover:text-[#5A6F21]"
-    >
-      NOTICIAS
-    </a>
-    
-    <a routerLink="/Login" class="flex items-center">
-      <img 
-        src="assets/usuario2.png" 
-        alt="Usuario" 
-        class="h-8 w-auto hover:rotate-6 transition-transform duration-300"
-      >
-    </a>
-  </nav>
-</div>
-
   <!-- Contenido principal -->
   <div class="flex flex-col lg:flex-row items-center justify-between px-8 py-12 gap-12">
     <!-- Texto -->
@@ -52,9 +62,13 @@
         y una interfaz visual amigable.
       </p>
       <div class="mt-6">
-        <button class="bg-[#FF5A21] text-white px-4 py-2 rounded-full hover:bg-orange-600 transition-all duration-300 hover:scale-105 transform">
-          CONOCE MÁS
-        </button>
+        <button 
+  (click)="abrirModal()" 
+  class="bg-[#FF5A21] text-white px-4 py-2 rounded-full hover:bg-orange-600 transition-all duration-300 hover:scale-105 transform"
+>
+  CONOCE MÁS
+</button>
+
       </div>
     </div>
 
@@ -385,3 +399,45 @@
     color: #fff;
   }
 </style>
+
+<!-- Modal -->
+<div 
+  *ngIf="modalAbierto" 
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md"
+>
+  <div class="bg-white rounded-2xl shadow-xl p-8 max-w-lg w-full relative">
+    <!-- Botón cerrar -->
+    <button 
+      (click)="cerrarModal()" 
+      class="absolute top-3 right-3 text-gray-500 hover:text-black text-xl font-bold"
+    >
+      ×
+    </button>
+
+    <!-- Contenido del modal -->
+    <h2 class="text-2xl font-bold text-[#5A6F21] mb-4">¿Por qué SolarSense?</h2>
+<p class="text-justify text-gray-700 leading-relaxed">
+  <span class="font-semibold text-[#FF5A21]">SolarSense</span> es más que una herramienta de monitoreo: 
+  es una solución inteligente diseñada para revolucionar la gestión de energía solar. 
+  Mediante sensores ambientales y eléctricos, nuestro sistema detecta en tiempo real cualquier cambio climático o falla en el rendimiento de los paneles solares, generando alertas automáticas para prevenir pérdidas.
+</p>
+
+<p class="text-justify text-gray-700 mt-4 leading-relaxed">
+  Desde hogares hasta instalaciones agropecuarias o educativas, SolarSense se adapta a distintos usuarios, 
+  ofreciendo visualización multiplataforma, análisis predictivo y reportes personalizados.
+</p>
+
+<p class="text-justify text-gray-700 mt-4 leading-relaxed">
+  <strong>Únete al futuro de la energía sostenible</strong> con una plataforma intuitiva, escalable y lista para mejorar la eficiencia de cada watt que produce el sol.
+</p>
+
+    <div class="mt-6 flex justify-end">
+      <button 
+        (click)="cerrarModal()" 
+        class="px-4 py-2 bg-[#5A6F21] text-white rounded-full hover:bg-green-700 transition"
+      >
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>
