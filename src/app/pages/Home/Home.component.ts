@@ -7,7 +7,7 @@ import { RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
   selector: 'app-home',
   standalone: true,
   imports: [RouterLink, RouterLinkActive, RouterModule, NgIf,NgClass],
-  templateUrl: './home.component.html',
+  templateUrl: './Home.component.html',
 })
 export class HomeComponent {
 menuAbierto = false;

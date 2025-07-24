@@ -4,7 +4,7 @@ import { loginFormComponent } from '../../components/organims/Login-form/login-f
 
 @Component({
   selector: 'app-login',
-  templateUrl: './login.component.html',
+  templateUrl: './Login.component.html',
   imports: [loginFormComponent]
 })
 export class LoginComponent {}

@@ -6,7 +6,7 @@ import { SideNavComponent } from '../../sidenav/sidenav.component';
   selector: 'app-novedades',
   standalone: true,
   imports: [ NgFor,SideNavComponent],
-  templateUrl: './novedades.component.html',
+  templateUrl: './Novedades.component.html',
 })
 export class NovedadesComponent {
   updates = [

@@ -7,7 +7,7 @@ import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-voltaje',
-  templateUrl: './voltaje.component.html',
+  templateUrl: './Voltaje.component.html',
   standalone: true,
   imports: [ChartModule, SideNavComponent,NgClass],
 })

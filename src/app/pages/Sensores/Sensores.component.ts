@@ -3,7 +3,7 @@ import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-sensores',
-  templateUrl: './sensores.component.html',
+  templateUrl: './Sensores.component.html',
   standalone: true,
   imports: [RouterOutlet],
 })
