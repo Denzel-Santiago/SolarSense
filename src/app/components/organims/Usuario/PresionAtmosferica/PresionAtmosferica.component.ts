@@ -7,12 +7,13 @@ import { WsHumedadService } from '../../../../services/Humedad.service';
 import { PresionGausService } from '../../../../services/PresionGaus.service';
 import { SensorService } from '../../../../services/sensor.service';
 import { NgClass, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-PresionAtmosferica',
   templateUrl: './PresionAtmosferica.component.html',
   standalone: true,
-  imports: [ChartModule, SideNavComponent, NgClass, NgIf],
+  imports: [ChartModule, SideNavComponent, NgClass, NgIf, FormsModule],
 })
 export class PresionAtmosfericaComponent implements OnInit {
   presionChart: any;
@@ -25,6 +26,9 @@ export class PresionAtmosfericaComponent implements OnInit {
 
   mostrarStats = false;
   statsData: any = null;
+
+  diasDistribucion: number = 1; // Valor inicial días para la distribución
+  errorDias = false;
 
   private wsPresionService = inject(WsPresionService);
   private wsHumedadService = inject(WsHumedadService);
@@ -40,7 +44,7 @@ export class PresionAtmosfericaComponent implements OnInit {
     this.initPresionChart();
     this.initDistribucionChart();
 
-    /* --- WebSocket de presión --- */
+    // WebSocket presión
     this.wsPresionService.getMessages().subscribe((data) => {
       if (!data?.presion || !data?.timestamp) return;
 
@@ -84,7 +88,7 @@ export class PresionAtmosfericaComponent implements OnInit {
       );
     });
 
-    /* --- WebSocket de humedad --- */
+    // WebSocket humedad
     this.wsHumedadService.getMessages().subscribe((data) => {
       if (data?.humedad !== undefined) {
         this.humedadActual = data.humedad;
@@ -95,66 +99,10 @@ export class PresionAtmosfericaComponent implements OnInit {
       }
     });
 
-    /* --- Distribución gaussiana --- */
-    this.gausService.fetchDistribution(1).subscribe((dist) => {
-      if (!dist?.x?.length || !dist?.y?.length) return;
-
-      this.distribucionChart = {
-        type: 'line',
-        data: {
-          labels: dist.x.map((v: number) => v.toFixed(2)),
-          datasets: [
-            {
-              label: 'Distribución de Presión',
-              data: dist.y,
-              borderColor: '#42A5F5',
-              backgroundColor: 'rgba(66,165,245,0.2)',
-              fill: true,
-              tension: 0.4,
-              pointRadius: 0,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            title: {
-              display: true,
-              text: `Distribución Normal — Media: ${dist.mean.toFixed(
-                2
-              )}, Desv. Estándar: ${dist.std.toFixed(2)}`,
-              font: { size: 16 },
-            },
-            tooltip: {
-              callbacks: {
-                label: (ctx: any) => `Probabilidad: ${ctx.parsed.y.toFixed(4)}`,
-              },
-            },
-          },
-          scales: {
-            x: {
-              title: {
-                display: true,
-                text: 'Presión (hPa)',
-                font: { size: 14, weight: 'bold' },
-              },
-            },
-            y: {
-              title: {
-                display: true,
-                text: 'Densidad de Probabilidad',
-                font: { size: 14, weight: 'bold' },
-              },
-              beginAtZero: true,
-            },
-          },
-        },
-      };
-    });
+    // Carga inicial distribución gaussiana con días = 1
+    this.cargarDistribucion(this.diasDistribucion);
   }
 
-  /* --- Inicializadores de gráfica --- */
   private initPresionChart() {
     this.presionChart = {
       type: 'line',
@@ -171,7 +119,6 @@ export class PresionAtmosfericaComponent implements OnInit {
     };
   }
 
-  /* --- Botón de estadísticas --- */
   obtenerStatsPresion() {
     this.sensorService.getPressureStats().subscribe({
       next: (data) => {
@@ -183,7 +130,83 @@ export class PresionAtmosfericaComponent implements OnInit {
     });
   }
 
-  /* --- Lógica para lluvia --- */
+  actualizarDistribucion() {
+    this.errorDias = false;
+    if (!this.diasDistribucion || this.diasDistribucion < 1 || this.diasDistribucion > 7) {
+      this.errorDias = true;
+      return;
+    }
+    this.cargarDistribucion(this.diasDistribucion);
+  }
+
+  private cargarDistribucion(days: number) {
+    this.sensorService.getPressureDistribution(days).subscribe({
+      next: (resp) => {
+        if (!resp?.histogram?.bins || !resp?.histogram?.counts) {
+          console.error('Datos incompletos para la distribución');
+          return;
+        }
+
+        const bins: number[] = resp.histogram.bins;
+        const counts: number[] = resp.histogram.counts;
+        const mean = resp.distribution.mean;
+        const std = resp.distribution.std;
+
+        this.distribucionChart = {
+          type: 'line',
+          data: {
+            labels: bins.map((b) => b.toFixed(3)),
+            datasets: [
+              {
+                label: 'Distribución de Presión',
+                data: counts,
+                borderColor: '#42A5F5',
+                backgroundColor: 'rgba(66,165,245,0.2)',
+                fill: true,
+                tension: 0.4,
+                pointRadius: 0,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              title: {
+                display: true,
+                text: `Distribución Normal — Media: ${mean.toFixed(3)}, Desv. Estándar: ${std.toFixed(3)}`,
+                font: { size: 16 },
+              },
+              tooltip: {
+                callbacks: {
+                  label: (ctx: any) => `Probabilidad: ${ctx.parsed.y.toFixed(4)}`,
+                },
+              },
+            },
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: 'Presión (hPa)',
+                  font: { size: 14, weight: 'bold' },
+                },
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: 'Densidad de Probabilidad',
+                  font: { size: 14, weight: 'bold' },
+                },
+                beginAtZero: true,
+              },
+            },
+          },
+        };
+      },
+      error: (err) => console.error('Error al cargar distribución:', err),
+    });
+  }
+
   private calcularProbabilidadLluvia(h: number, p: number): string {
     if (p < 1000 && h > 80) return 'Alta';
     if (p < 1010 && h > 70) return 'Media';

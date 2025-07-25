@@ -11,26 +11,39 @@
     <!-- Gráfica de presión + tarjetas -->
     <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 bg-white flex-grow">
       <!-- Gráfica de presión -->
-      <div class="col-span-2">
+      <div class="col-span-2 flex flex-col gap-6">
         <p-chart
           [type]="presionChart.type"
           [data]="presionChart.data"
           class="w-full h-[300px]">
         </p-chart>
+
+        <!-- Gráfica de distribución gaussiana (mismo ancho) -->
+        <div class="bg-white rounded-xl p-4 shadow h-[300px]">
+          <h2 class="text-lg font-semibold mb-4 text-gray-800">
+            Distribución Gaussiana de la Presión (últimos {{ diasDistribucion }} días)
+          </h2>
+          <p-chart *ngIf="distribucionChart"
+                   [type]="distribucionChart.type"
+                   [data]="distribucionChart.data"
+                   [options]="distribucionChart.options"
+                   class="w-full h-[300px]">
+          </p-chart>
+        </div>
       </div>
 
-      <!-- Tarjetas informativas + botón -->
+      <!-- Tarjetas informativas + botones -->
       <div class="flex flex-col gap-4">
         <!-- Estado del sensor -->
         <div
           [ngClass]="sensorConectado ? 'bg-green-200' : 'bg-red-200'"
-          class="p-4 rounded-xl shadow text-center font-semibold">
+          class="p-2 rounded-xl shadow text-center font-semibold">
           <span *ngIf="sensorConectado">Sensor Conectado ✅</span>
           <span *ngIf="!sensorConectado">Sensor Desconectado ❌</span>
         </div>
 
         <!-- Presión actual -->
-        <div class="bg-blue-100 p-4 rounded-xl shadow text-center">
+        <div class="bg-blue-100 p-1 rounded-xl shadow text-center">
           <div class="text-sm text-gray-600">Presión Actual</div>
           <div class="text-2xl font-bold">{{ presionActual }} hPa</div>
         </div>
@@ -42,7 +55,7 @@
             'bg-yellow-200': probabilidadLluvia === 'Media',
             'bg-green-200': probabilidadLluvia === 'Baja'
           }"
-          class="p-4 rounded-xl shadow text-center">
+          class="p-1 rounded-xl shadow text-center">
           <div class="text-sm text-gray-600">Probabilidad de lluvia</div>
           <div class="text-xl font-bold">{{ probabilidadLluvia }}</div>
         </div>
@@ -52,37 +65,46 @@
           <button
             class="w-full py-2 px-4 bg-purple-600 text-white font-semibold rounded-xl shadow-md transition-all duration-300 transform hover:bg-purple-700 hover:scale-105 hover:shadow-lg active:scale-95"
             (click)="obtenerStatsPresion()">
-            📊 Mostrar Estadísticas
+            📊 Mostrar Estadísticas
           </button>
         </div>
 
         <!-- Tarjeta de estadísticas -->
-        <div *ngIf="mostrarStats && statsData" class="bg-white p-4 rounded shadow text-sm">
-          <h4 class="text-lg font-semibold mb-2">📈 Estadísticas de Presión</h4>
+        <div *ngIf="mostrarStats && statsData" class="bg-white p-4 rounded shadow text-sm mb-4">
+          <h4 class="text-lg font-semibold mb-2">📈 Estadísticas de Presión</h4>
           <ul class="list-disc pl-5 space-y-1">
             <li><strong>Media:</strong> {{ statsData.Mean }}</li>
             <li><strong>Mediana:</strong> {{ statsData.Median }}</li>
-            <li><strong>Desviación estándar:</strong> {{ statsData.STD }}</li>
+            <li><strong>Desviación estándar:</strong> {{ statsData.STD }}</li>
             <li><strong>Máximo:</strong> {{ statsData.Max }}</li>
             <li><strong>Mínimo:</strong> {{ statsData.Min }}</li>
             <li><strong>Moda:</strong> {{ statsData.Mode }}</li>
           </ul>
         </div>
-      </div>
-    </div>
 
-    <!-- Gráfica de distribución gaussiana -->
-    <div class="p-6 bg-white">
-      <div class="bg-white rounded-xl p-4 shadow h-[300px]">
-        <h2 class="text-lg font-semibold mb-4 text-gray-800">
-          Distribución Gaussiana de la Presión (últimas 24 horas)
-        </h2>
-        <p-chart *ngIf="distribucionChart"
-                 [type]="distribucionChart.type"
-                 [data]="distribucionChart.data"
-                 [options]="distribucionChart.options"
-                 class="w-full h-[300px]">
-        </p-chart>
+        <!-- Controles para distribución gaussiana debajo de las estadísticas -->
+        <div class="bg-white rounded-xl shadow p-1">
+          <label for="daysInput" class="block mb-2 font-semibold text-gray-700">
+            Selecciona días (1-7) para distribución gaussiana:
+          </label>
+          <div class="flex gap-2">
+            <input
+              id="daysInput"
+              type="number"
+              min="1"
+              max="7"
+              [(ngModel)]="diasDistribucion"
+              class="border rounded px-3 py-2 w-full"
+              placeholder="1 a 7"
+            />
+            <button
+              (click)="actualizarDistribucion()"
+              class="bg-purple-600 text-white px-4 py-2 rounded shadow hover:bg-purple-700 transition">
+              Actualizar
+            </button>
+          </div>
+          <p *ngIf="errorDias" class="text-red-600 mt-2 text-sm">Ingresa un número entre 1 y 7.</p>
+        </div>
       </div>
     </div>
   </div>

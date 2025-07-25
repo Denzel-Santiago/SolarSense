@@ -8,32 +8,26 @@
     </div>
 
     <div class="p-6 flex flex-col lg:flex-row gap-6 bg-white flex-grow">
-      <!-- Gráfica -->
-      <div class="flex-1">
+      <!-- Contenedor izquierdo: Gráfica y distribución -->
+      <div class="flex-1 flex flex-col gap-6">
+        <!-- Gráfica principal de humedad -->
         <p-chart [type]="humedadChart.type" [data]="humedadChart.data" class="w-full h-[300px]"></p-chart>
 
-        <!-- Tabla de datos de humedad -->
-        <div class="overflow-x-auto mt-4">
-          <table class="table table-striped table-bordered w-full text-sm">
-            <thead class="thead-dark">
-              <tr>
-                <th>ID</th>
-                <th>Valor</th>
-                <th>Fecha</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let sensor of sensores">
-                <td>{{ sensor.id }}</td>
-                <td>{{ sensor.value }}</td>
-                <td>{{ sensor.timestamp }}</td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- Gráfica de distribución gaussiana -->
+        <div class="bg-white rounded-xl p-4 shadow h-[300px]">
+          <h2 class="text-lg font-semibold mb-4 text-gray-800">
+            Distribución Gaussiana de la Humedad (últimos {{ diasDistribucion }} días)
+          </h2>
+          <p-chart *ngIf="distribucionChart"
+                   [type]="distribucionChart.type"
+                   [data]="distribucionChart.data"
+                   [options]="distribucionChart.options"
+                   class="w-full h-[300px]">
+          </p-chart>
         </div>
       </div>
 
-      <!-- Panel derecho con dos tarjetas y estadísticas -->
+      <!-- Panel derecho con tarjetas y controles -->
       <div class="flex flex-col gap-4 w-full lg:w-[300px]">
         <!-- Estado de conexión -->
         <div class="p-4 rounded-xl shadow text-white text-lg font-semibold"
@@ -68,6 +62,31 @@
             <li><strong>Mínimo:</strong> {{ statsData.Min }}</li>
             <li><strong>Moda:</strong> {{ statsData.Mode }}</li>
           </ul>
+        </div>
+
+        <!-- Control días para distribución gaussiana -->
+        <div class="bg-white rounded-xl shadow p-4 mt-6">
+          <label for="daysInput" class="block mb-2 font-semibold text-gray-700">
+            Selecciona días (1-7) para distribución gaussiana:
+          </label>
+          <div class="flex gap-2">
+            <input
+              id="daysInput"
+              type="number"
+              min="1"
+              max="7"
+              [(ngModel)]="diasDistribucion"
+              class="border rounded px-3 py-2 w-full"
+              placeholder="1 a 7"
+            />
+            <button
+              (click)="actualizarDistribucion()"
+              class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition"
+            >
+              Actualizar
+            </button>
+          </div>
+          <p *ngIf="errorDias" class="text-red-600 mt-2 text-sm">Ingresa un número entre 1 y 7.</p>
         </div>
       </div>
     </div>
