@@ -1,5 +1,6 @@
-//src/app/app.routes.ts
+// src/app/app.routes.ts
 import { Routes } from '@angular/router';
+import { AuthGuard } from './auth/auth.guard';
 
 import { LoginComponent } from './pages/Login/Login.component';
 import { UsuarioDashComponent } from './components/organims/Usuario/UsuarioDash/UsuarioDash.component';
@@ -17,29 +18,57 @@ import { NovedadesAdminComponent } from './components/organims/Admin/Novedades/N
 import { NoticiasComponent } from './pages/Noticias/Noticias.component';
 
 export const routes: Routes = [
-  { path: 'Login', component: LoginComponent },
-  { path: '', component: HomeComponent },
-  { path: 'Lista-Usuarios', component: ListaUsuariosComponent },
-  { path: 'Membresias', component: MembresiasComponent},
-  { path: 'Novedades-Admin', component: NovedadesAdminComponent},
-  { path: 'Noticias', component: NoticiasComponent},
-
-
-
+  { 
+    path: 'Login', 
+    component: LoginComponent,
+    data: { requiresAuth: false }
+  },
+  { 
+    path: '', 
+    component: HomeComponent,
+    data: { requiresAuth: false }
+  },
+  { 
+    path: 'Noticias', 
+    component: NoticiasComponent,
+    data: { requiresAuth: false }
+  },
+  // Rutas de administrador
+  { 
+    path: 'Lista-Usuarios', 
+    component: ListaUsuariosComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ['admin'] }
+  },
+  { 
+    path: 'Membresias', 
+    component: MembresiasComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ['admin'] }
+  },
+  { 
+    path: 'Novedades-Admin', 
+    component: NovedadesAdminComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ['admin'] }
+  },
+  // Rutas de usuarios (free y premium)
   {
     path: 'Sensores',
     component: SensoresComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ['free', 'premium'] },
     children: [
+      { path: 'UsuarioDash', component: UsuarioDashComponent },
       { path: 'Voltaje', component: VoltajeComponent },
       { path: 'Humedad', component: HumedadComponent },
       { path: 'Temperatura', component: TemperaturaComponent },
-      { path: 'UsuarioDash', component: UsuarioDashComponent },
       { path: 'PresionAtmosferica', component: PresionAtmosfericaComponent },
       { path: 'Novedades', component: NovedadesComponent },
       { path: 'Perfil', component: PerfilComponent },
-
-
-      { path: '', redirectTo: 'UsuarioDash', pathMatch: 'full' } 
+      // Cambiar la redirección por defecto a Novedades
+      { path: '', redirectTo: 'Novedades', pathMatch: 'full' }
     ]
-  }
+  },
+  { path: '**', redirectTo: '' }
 ];

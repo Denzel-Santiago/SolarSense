@@ -16,7 +16,6 @@ import { FormsModule } from '@angular/forms';
     SideNavComponent,
     NgClass,
     NgIf,
-    NgForOf,
     FormsModule
   ],
 })
