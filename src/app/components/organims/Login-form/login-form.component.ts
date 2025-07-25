@@ -168,7 +168,7 @@ export class loginFormComponent implements AfterViewInit, OnDestroy {
   }
 
   onLogin() {
-    this.http.post<any>('https://apigeneral.serveirc.com/api/auth/email/login', {
+    this.http.post<any>('http://3.223.148.111:8000/api/auth/email/login', {
       email: this.loginData.email,
       password: this.loginData.password
     }).subscribe({
@@ -203,7 +203,7 @@ export class loginFormComponent implements AfterViewInit, OnDestroy {
       return;
     }
 
-    this.http.post<any>('https://apigeneral.serveirc.com/api/auth/email/register', {
+    this.http.post<any>('http://3.223.148.111:8000/api/auth/email/register', {
       email: this.registerData.email,
       password: this.registerData.password,
       username: this.registerData.username
@@ -230,7 +230,7 @@ export class loginFormComponent implements AfterViewInit, OnDestroy {
   handleGoogleLogin(response: any) {
     const idToken = response.credential;
 
-    this.http.post<any>('https://apigeneral.serveirc.com/api/auth/google', {
+    this.http.post<any>('http://3.223.148.111:8000/api/auth/google', {
       idToken
     }).subscribe({
       next: res => {
