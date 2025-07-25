@@ -2,21 +2,14 @@
   <app-side-nav-Admin></app-side-nav-Admin>
 
   <div class="flex-1 flex flex-col overflow-auto bg-gray-100">
-    <!-- Título y botón agregar -->
+    <!-- Título -->
     <div class="p-6 bg-[#1f3a2e] text-white flex justify-between items-center">
       <div class="text-3xl font-bold">LISTA DE USUARIOS</div>
-      <button (click)="abrirModalNuevo()" 
-              class="px-4 py-2 bg-[#3a5e3f] hover:bg-[#4a7a4f] text-white rounded-lg flex items-center gap-2 transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-        </svg>
-        Agregar Usuario
-      </button>
     </div>
 
     <div class="p-6 bg-white space-y-10 flex-grow overflow-y-auto">
 
-      <!-- TABLA USUARIOS NORMALES -->
+      <!-- USUARIOS NORMALES -->
       <div class="w-full max-w-7xl mx-auto rounded-2xl overflow-hidden border border-[#C2DB95] shadow-md">
         <div class="bg-[#5A6F21] px-4 py-3 text-white text-center font-bold text-lg">
           Usuarios Normales
@@ -57,7 +50,7 @@
         </div>
       </div>
 
-      <!-- TABLA USUARIOS GOOGLE -->
+      <!-- USUARIOS GOOGLE -->
       <div class="w-full max-w-7xl mx-auto rounded-2xl overflow-hidden border border-[#C2DB95] shadow-md">
         <div class="bg-[#5A6F21] px-4 py-3 text-white text-center font-bold text-lg">
           Usuarios Google
@@ -98,44 +91,36 @@
   </div>
 </div>
 
-<!-- Modal -->
+<!-- MODAL -->
 <div *ngIf="modalAbierto"
      class="fixed inset-0 flex items-center justify-center z-50 pointer-events-auto backdrop-blur-sm">
   <div class="bg-white p-6 rounded-lg w-full max-w-md shadow-lg border">
     <h2 class="text-xl font-bold mb-4 text-center">{{ esNuevoUsuario ? 'Agregar Usuario' : 'Editar Usuario' }}</h2>
 
     <form (ngSubmit)="guardarCambios()" class="space-y-4">
-      <div>
-        <label class="block font-medium">Nombre</label>
-        <input [(ngModel)]="usuarioSeleccionado.nombre" name="nombre" required
-               class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-[#C2DB95]" />
-      </div>
+  <div>
+    <label class="block font-medium">Nombre de usuario</label>
+    <input [(ngModel)]="usuarioSeleccionado.username" name="username" required
+           class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-[#C2DB95]" />
+  </div>
 
-      <div>
-        <label class="block font-medium">Correo</label>
-        <input [(ngModel)]="usuarioSeleccionado.correo" name="correo" type="email" required
-               class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-[#C2DB95]" />
-      </div>
+  <div>
+    <label class="block font-medium">Correo electrónico</label>
+    <input [(ngModel)]="usuarioSeleccionado.email" name="email" type="email" required
+           class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-[#C2DB95]" />
+  </div>
 
-      <div>
-        <label class="block font-medium">Rol</label>
-        <select [(ngModel)]="usuarioSeleccionado.rol" name="rol" required
-                class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-[#C2DB95]">
-          <option value="Usuario">Usuario</option>
-          <option value="Administrador">Administrador</option>
-        </select>
-      </div>
+  <div class="flex justify-end gap-3 pt-4">
+    <button type="button" (click)="cerrarModal()"
+            class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+      Cancelar
+    </button>
+    <button type="submit"
+            class="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-800">
+      Guardar
+    </button>
+  </div>
+</form>
 
-      <div class="flex justify-end gap-3 pt-4">
-        <button type="button" (click)="cerrarModal()"
-                class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
-          Cancelar
-        </button>
-        <button type="submit"
-                class="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-800">
-          Guardar
-        </button>
-      </div>
-    </form>
   </div>
 </div>
