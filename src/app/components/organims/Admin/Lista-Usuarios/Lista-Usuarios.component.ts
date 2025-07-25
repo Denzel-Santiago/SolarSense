@@ -62,22 +62,21 @@ export class ListaUsuariosComponent implements OnInit {
     });
   }
 
-  abrirModal(usuario: any) {
-    this.esNuevoUsuario = false;
-    this.usuarioSeleccionado = { ...usuario };
-    this.modalAbierto = true;
+ abrirModal(usuario: any) {
+  if (usuario.provider === 'google') {
+    console.warn('Usuario de Google: no editable');
+    return;
   }
 
-  abrirModalNuevo() {
-    this.esNuevoUsuario = true;
-    this.usuarioSeleccionado = {
-      id: 0,
-      nombre: '',
-      correo: '',
-      rol: 'Usuario'
-    };
-    this.modalAbierto = true;
-  }
+  this.esNuevoUsuario = false;
+  this.usuarioSeleccionado = {
+    id: usuario.id,
+    username: usuario.nombre,
+    email: usuario.correo
+  };
+  this.modalAbierto = true;
+}
+
 
   cerrarModal() {
     this.modalAbierto = false;
@@ -85,25 +84,25 @@ export class ListaUsuariosComponent implements OnInit {
   }
 
   guardarCambios() {
-    if (this.esNuevoUsuario) {
-      this.userService.createUser(this.usuarioSeleccionado).subscribe({
-        next: (nuevoUsuario) => {
-          this.usuariosNormales.push(nuevoUsuario);
-          this.cerrarModal();
-        },
-        error: (err) => console.error('Error al crear usuario:', err)
-      });
-    } else {
-      this.userService.updateUser(this.usuarioSeleccionado.id, this.usuarioSeleccionado).subscribe({
-        next: (usuarioActualizado) => {
-          const index = this.usuariosNormales.findIndex(u => u.id === usuarioActualizado.id);
-          if (index !== -1) this.usuariosNormales[index] = usuarioActualizado;
-          this.cerrarModal();
-        },
-        error: (err) => console.error('Error al actualizar usuario:', err)
-      });
-    }
+  if (!this.usuarioSeleccionado?.id) {
+    console.error('❌ Usuario seleccionado no válido');
+    return;
   }
+
+  const payload = {
+    username: this.usuarioSeleccionado.username,
+    email: this.usuarioSeleccionado.email
+  };
+
+  this.userService.updateUser(this.usuarioSeleccionado.id, payload).subscribe({
+    next: () => {
+      this.obtenerUsuarios(); // recargar lista completa
+      this.cerrarModal();
+    },
+    error: (err) => console.error('Error al actualizar usuario:', err)
+  });
+}
+
 
   get filasVaciasNormales(): any[] {
     const faltantes = 5 - (this.usuariosNormales?.length || 0);
