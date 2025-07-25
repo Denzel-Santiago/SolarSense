@@ -8,37 +8,39 @@
     <!-- Contenido -->
     <div class="p-6 bg-white space-y-6 flex-grow overflow-y-auto">
 
-      <!-- Botones -->
-      <div class="flex flex-wrap justify-center gap-4">
-        <button class="bg-[#5A6F21] hover:bg-[#466013] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2">
-          <img src="assets/agregar.png" alt="Agregar" class="w-5 h-5" />
-          AGREGAR
-        </button>
+   <!-- Botones -->
+<div class="flex justify-center items-center gap-4">
+  <button (click)="abrirModalNueva()"
+          class="bg-[#5A6F21] hover:bg-[#466013] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2">
+    <img src="assets/agregar.png" alt="Agregar" class="w-5 h-5" />
+    <span>AGREGAR</span>
+  </button>
 
-        <button class="bg-[#5A6F21] hover:bg-[#466013] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2">
-          <span>FILTRAR BUSQUEDA</span>
-          <svg class="w-4 h-4" fill="white" viewBox="0 0 20 20"><path d="M5.5 7l4.5 4.5L14.5 7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-        </button>
-      </div>
+  <select [(ngModel)]="filtroFecha" (change)="onFiltroFechaChange()"
+          class="bg-[#5A6F21] hover:bg-[#466013] text-white font-semibold px-6 py-2 rounded-lg focus:outline-none">
+    <option value="recientes">Más recientes</option>
+    <option value="antiguos">Más antiguos</option>
+  </select>
+</div>
 
       <!-- Lista de Novedades -->
       <div class="space-y-6 max-w-5xl mx-auto">
         <div *ngFor="let novedad of novedades; let i = index"
              class="border rounded-xl overflow-hidden shadow-sm">
-          
+
           <!-- Cabecera -->
           <div class="flex justify-between items-center bg-[#C2DB95] px-4 py-3">
             <div class="flex items-center gap-3">
               <img src="assets/Foquin.png" alt="Mascota" class="w-10 h-10" />
               <span class="font-bold text-[#1a1a1a] text-lg">POLAR SOFT</span>
             </div>
-            <span class="text-sm font-semibold text-gray-800">{{ novedad.hora }}</span>
+            <span class="text-sm font-semibold text-gray-800">{{ novedad.created_at | date: 'short' }}</span>
           </div>
 
           <!-- Cuerpo -->
           <div class="bg-white px-6 py-4 relative">
-            <h3 class="uppercase text-sm font-semibold mb-2 text-black">{{ novedad.titulo }}</h3>
-            <p class="text-sm text-gray-800">{{ novedad.descripcion }}</p>
+            <h3 class="uppercase text-sm font-semibold mb-2 text-black">{{ novedad.title }}</h3>
+            <p class="text-sm text-gray-800">{{ novedad.content }}</p>
 
             <!-- Botones flotantes -->
             <div class="absolute top-3 right-3 flex gap-2">
@@ -56,3 +58,38 @@
     </div>
   </div>
 </div>
+
+
+<!-- Modal Novedades -->
+<div *ngIf="modalAbierto"
+     class="fixed inset-0 flex items-center justify-center z-50 pointer-events-auto backdrop-blur-sm">
+  <div class="bg-white p-6 rounded-lg w-full max-w-md shadow-lg border">
+    <h2 class="text-xl font-bold mb-4 text-center">{{ esNuevaNovedad ? 'Agregar Novedad' : 'Editar Novedad' }}</h2>
+
+    <form (ngSubmit)="guardarCambios()" class="space-y-4">
+      <div>
+        <label class="block font-medium">Título</label>
+        <input [(ngModel)]="novedadSeleccionada.title" name="titulo" required
+               class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-[#C2DB95]" />
+      </div>
+
+      <div>
+        <label class="block font-medium">Contenido</label>
+        <textarea [(ngModel)]="novedadSeleccionada.content" name="contenido" required rows="4"
+                  class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-[#C2DB95]"></textarea>
+      </div>
+
+      <div class="flex justify-end gap-3 pt-4">
+        <button type="button" (click)="cerrarModal()"
+                class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+          Cancelar
+        </button>
+        <button type="submit"
+                class="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-800">
+          Guardar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+

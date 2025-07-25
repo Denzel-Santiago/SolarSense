@@ -14,7 +14,6 @@ export class SideNavAdminComponent {
     { icon: 'assets/usuario.png', label: 'Lista-Usuarios' },
     { icon: 'assets/card.png', label: 'Membresias' },
     { icon: 'assets/novedad.png', label: 'Novedades' },
-    { icon: 'assets/alert.png', label: 'Alerta' },
     { icon: 'assets/salir.png', label: 'Salir' }
   ];
 
