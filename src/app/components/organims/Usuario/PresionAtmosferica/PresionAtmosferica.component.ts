@@ -4,7 +4,6 @@ import { ChartModule } from 'primeng/chart';
 import { SideNavComponent } from '../../sidenav/sidenav.component';
 import { WsPresionService } from '../../../../services/Presion.service';
 import { WsHumedadService } from '../../../../services/Humedad.service';
-import { PresionGausService } from '../../../../services/PresionGaus.service';
 import { SensorService } from '../../../../services/sensor.service';
 import { NgClass, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -32,7 +31,6 @@ export class PresionAtmosfericaComponent implements OnInit {
 
   private wsPresionService = inject(WsPresionService);
   private wsHumedadService = inject(WsHumedadService);
-  private gausService = inject(PresionGausService);
   private sensorService = inject(SensorService);
 
   private maxPuntos = 20;

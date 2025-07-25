@@ -11,7 +11,7 @@ import { Novedad } from '../../../../Interface/Novedad';
   templateUrl: './Novedades.component.html',
 })
 export class NovedadesComponent implements OnInit {
- novedades: Novedad[] = [];
+  novedades: Novedad[] = [];
   novedadReciente: Novedad | null = null;
 
   constructor(private novedadesService: NovedadesService) {}

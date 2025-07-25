@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-novedades-Admin',
-  templateUrl: './Novedades.component.html',
+  templateUrl: './NovedadesAdmin.component.html',
   standalone: true,
   imports: [SideNavAdminComponent, NgFor,DatePipe,FormsModule,NgIf]
 })
@@ -51,6 +51,11 @@ onFiltroFechaChange() {
 
 //filtro de fechas
 aplicarFiltro() {
+  if (!Array.isArray(this.novedadesOriginal)) {
+    console.warn('❗ novedadesOriginal no está lista todavía');
+    return;
+  }
+
   const copia = [...this.novedadesOriginal];
 
   this.novedades = copia.sort((a, b) => {
@@ -60,6 +65,7 @@ aplicarFiltro() {
     return this.filtroFecha === 'recientes' ? fechaB - fechaA : fechaA - fechaB;
   });
 }
+
 
 
 

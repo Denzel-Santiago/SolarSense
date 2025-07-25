@@ -7,7 +7,7 @@ import { User } from '../Interface/Membresia';
   providedIn: 'root',
 })
 export class UserService {
-  private baseUrl = 'https://apigeneral.serveirc.com/api/memberships';
+  private baseUrl = 'http://3.223.148.111:8000/api/memberships';
   private authToken = '$2a$10$Wgs8JL0bkgcZ2MZ2uNy.MY10bcBr6Dw6X7n55f2Q/QQj2Ws0';
 
   constructor(private http: HttpClient) {}
@@ -35,7 +35,7 @@ export class UserService {
   }
 
 createUser(usuario: any): Observable<any> {
-  const url = 'https://apigeneral.serveirc.com/api/memberships/register';
+  const url = 'http://3.223.148.111:8000/api/memberships/register';
   return this.http.post(url, usuario, {
     headers: this.getAuthHeaders(),
   });
