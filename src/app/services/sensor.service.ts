@@ -8,7 +8,7 @@ import { catchError } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class SensorService {
-  private baseUrl = 'http://127.0.0.1:8000/api';  // URL base de tu API
+  private baseUrl = 'http://52.55.208.102:8005/api';  // URL base de tu API
 
   constructor(private http: HttpClient) {}
 
