@@ -1,25 +1,40 @@
+//Humedad.component.ts
 import { Component, OnInit, inject } from '@angular/core';
 import { ChartModule } from 'primeng/chart';
 import { SideNavComponent } from '../../sidenav/sidenav.component';
 import { WsHumedadService } from '../../../../services/Humedad.service';
-import { NgClass } from '@angular/common';
+import { SensorService } from '../../../../services/sensor.service';
+import { NgClass, NgIf, NgForOf, CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-Humedad',
   templateUrl: './Humedad.component.html',
   standalone: true,
-  imports: [ChartModule, SideNavComponent,NgClass],
+  imports: [
+    ChartModule,
+    SideNavComponent,
+    NgClass,
+    NgIf,
+    NgForOf,
+    CommonModule
+  ],
 })
 export class HumedadComponent implements OnInit {
   humedadChart: any;
   humedadActual: number = 0;
   sensorConectado: boolean = false;
-  colorEstado: string = 'bg-gray-200'; // color inicial por defecto
+  colorEstado: string = 'bg-gray-200';
 
   private wsService = inject(WsHumedadService);
+  private sensorService = inject(SensorService);
+
   private maxPuntos = 20;
   private etiquetas: string[] = [];
   private valores: number[] = [];
+
+  mostrarStats = false;
+  statsData: any = null;
+  sensores: any[] = []; // <-- para la tabla de datos
 
   ngOnInit() {
     this.iniciarGrafica();
@@ -51,11 +66,17 @@ export class HumedadComponent implements OnInit {
               borderColor: '#26C6DA',
               backgroundColor: 'rgba(38, 198, 218, 0.2)',
               fill: true,
-              tension: 0.4
-            }
-          ]
-        }
+              tension: 0.4,
+            },
+          ],
+        },
       };
+    });
+
+    // Obtener datos para tabla
+    this.sensorService.getHumidityStats().subscribe({
+      next: (data) => this.sensores = data,
+      error: (err) => console.error('Error al obtener datos de humedad:', err),
     });
   }
 
@@ -71,10 +92,10 @@ export class HumedadComponent implements OnInit {
             borderColor: '#26C6DA',
             backgroundColor: 'rgba(38, 198, 218, 0.2)',
             fill: true,
-            tension: 0.4
-          }
-        ]
-      }
+            tension: 0.4,
+          },
+        ],
+      },
     };
   }
 
@@ -82,5 +103,17 @@ export class HumedadComponent implements OnInit {
     if (valor <= 30) return 'bg-red-200';
     if (valor <= 60) return 'bg-yellow-200';
     return 'bg-green-200';
+  }
+
+  obtenerStatsHumedad() {
+    this.sensorService.getHumidityStats().subscribe({
+      next: (data) => {
+        this.statsData = data.basic_stats;
+        this.mostrarStats = true;
+      },
+      error: (err) => {
+        console.error('Error obteniendo estadísticas:', err);
+      },
+    });
   }
 }

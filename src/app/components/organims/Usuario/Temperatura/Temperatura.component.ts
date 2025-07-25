@@ -1,14 +1,15 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ChartModule } from 'primeng/chart';
 import { SideNavComponent } from '../../sidenav/sidenav.component';
-import { NgClass, NgIf, NgStyle } from '@angular/common';
+import { NgClass, NgIf } from '@angular/common';
 import { WsTemperaturaService } from '../../../../services/Temperatura.service';
+import { SensorService } from '../../../../services/sensor.service';
 
 @Component({
   selector: 'app-Temperatura',
   templateUrl: './Temperatura.component.html',
   standalone: true,
-  imports: [ChartModule, SideNavComponent, NgClass],
+  imports: [ChartModule, SideNavComponent, NgClass, NgIf],
 })
 export class TemperaturaComponent implements OnInit {
   temperaturaChart: any;
@@ -17,10 +18,14 @@ export class TemperaturaComponent implements OnInit {
   colorEstado = '';
 
   private wsService = inject(WsTemperaturaService);
+  private sensorService = inject(SensorService);
+
   private maxPuntos = 20;
   private etiquetas: string[] = [];
   private temperaturas: number[] = [];
-  private timeoutRef: any;
+
+  mostrarStats = false;
+  statsData: any = null;
 
   ngOnInit() {
     this.initChart();
@@ -31,11 +36,7 @@ export class TemperaturaComponent implements OnInit {
 
       this.temperaturaActual = temperatura;
       this.sensorConectado = true;
-
-      clearTimeout(this.timeoutRef);
-      this.timeoutRef = setTimeout(() => {
-        this.sensorConectado = false;
-      }, 5000);
+      this.colorEstado = this.definirColorPorTemperatura(temperatura);
 
       this.etiquetas.push(timestamp);
       this.temperaturas.push(temperatura);
@@ -81,5 +82,23 @@ export class TemperaturaComponent implements OnInit {
         ],
       },
     };
+  }
+
+  definirColorPorTemperatura(valor: number): string {
+    if (valor <= 10) return 'bg-blue-200';
+    if (valor <= 25) return 'bg-yellow-200';
+    return 'bg-red-200';
+  }
+
+  obtenerStatsTemperatura() {
+    this.sensorService.getTemperatureStats().subscribe({
+      next: (data) => {
+        this.statsData = data.basic_stats;
+        this.mostrarStats = true;
+      },
+      error: (err) => {
+        console.error('Error al obtener estadísticas de temperatura:', err);
+      },
+    });
   }
 }

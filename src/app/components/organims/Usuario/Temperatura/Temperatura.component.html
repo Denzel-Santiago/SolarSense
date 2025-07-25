@@ -1,3 +1,4 @@
+<!-- Temperatura.component.html -->
 <div class="flex h-screen overflow-hidden">
   <app-side-nav></app-side-nav>
 
@@ -24,6 +25,29 @@
         <div class="p-4 rounded-xl shadow text-center text-lg font-bold transition-colors"
              [ngClass]="colorEstado">
           🌡 Temperatura actual: {{ temperaturaActual }} °C
+        </div>
+
+        <!-- Botón para mostrar estadísticas -->
+        <div class="mt-4">
+          <button 
+            class="w-full py-2 px-4 bg-red-600 text-white font-semibold rounded-xl shadow-md transition-all duration-300 transform hover:bg-red-700 hover:scale-105 hover:shadow-lg active:scale-95"
+            (click)="obtenerStatsTemperatura()"
+          >
+            📊 Mostrar Estadísticas
+          </button>
+        </div>
+
+        <!-- Sección para estadísticas -->
+        <div *ngIf="mostrarStats && statsData" class="bg-white p-4 rounded shadow text-sm">
+          <h4 class="text-lg font-semibold mb-2">📈 Estadísticas de Temperatura</h4>
+          <ul class="list-disc pl-5 space-y-1">
+            <li><strong>Media:</strong> {{ statsData.Mean }}</li>
+            <li><strong>Mediana:</strong> {{ statsData.Median }}</li>
+            <li><strong>Desviación estándar:</strong> {{ statsData.STD }}</li>
+            <li><strong>Máximo:</strong> {{ statsData.Max }}</li>
+            <li><strong>Mínimo:</strong> {{ statsData.Min }}</li>
+            <li><strong>Moda:</strong> {{ statsData.Mode }}</li>
+          </ul>
         </div>
       </div>
     </div>

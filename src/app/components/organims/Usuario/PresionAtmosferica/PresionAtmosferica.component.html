@@ -1,3 +1,4 @@
+<!-- PresionAtmosferica.component.html -->
 <div class="flex h-screen overflow-hidden">
   <app-side-nav></app-side-nav>
 
@@ -11,31 +12,61 @@
     <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 bg-white flex-grow">
       <!-- Gráfica de presión -->
       <div class="col-span-2">
-        <p-chart [type]="presionChart.type" [data]="presionChart.data" class="w-full h-[300px]"></p-chart>
+        <p-chart
+          [type]="presionChart.type"
+          [data]="presionChart.data"
+          class="w-full h-[300px]">
+        </p-chart>
       </div>
 
-      <!-- Tarjetas informativas -->
+      <!-- Tarjetas informativas + botón -->
       <div class="flex flex-col gap-4">
-        <div [ngClass]="sensorConectado ? 'bg-green-200' : 'bg-red-200'" class="p-4 rounded-xl shadow text-center font-semibold">
+        <!-- Estado del sensor -->
+        <div
+          [ngClass]="sensorConectado ? 'bg-green-200' : 'bg-red-200'"
+          class="p-4 rounded-xl shadow text-center font-semibold">
           <span *ngIf="sensorConectado">Sensor Conectado ✅</span>
           <span *ngIf="!sensorConectado">Sensor Desconectado ❌</span>
         </div>
 
+        <!-- Presión actual -->
         <div class="bg-blue-100 p-4 rounded-xl shadow text-center">
           <div class="text-sm text-gray-600">Presión Actual</div>
           <div class="text-2xl font-bold">{{ presionActual }} hPa</div>
         </div>
 
-        <div 
+        <!-- Probabilidad de lluvia -->
+        <div
           [ngClass]="{
             'bg-red-200': probabilidadLluvia === 'Alta',
             'bg-yellow-200': probabilidadLluvia === 'Media',
             'bg-green-200': probabilidadLluvia === 'Baja'
           }"
-          class="p-4 rounded-xl shadow text-center"
-        >
+          class="p-4 rounded-xl shadow text-center">
           <div class="text-sm text-gray-600">Probabilidad de lluvia</div>
           <div class="text-xl font-bold">{{ probabilidadLluvia }}</div>
+        </div>
+
+        <!-- Botón morado para estadísticas -->
+        <div>
+          <button
+            class="w-full py-2 px-4 bg-purple-600 text-white font-semibold rounded-xl shadow-md transition-all duration-300 transform hover:bg-purple-700 hover:scale-105 hover:shadow-lg active:scale-95"
+            (click)="obtenerStatsPresion()">
+            📊 Mostrar Estadísticas
+          </button>
+        </div>
+
+        <!-- Tarjeta de estadísticas -->
+        <div *ngIf="mostrarStats && statsData" class="bg-white p-4 rounded shadow text-sm">
+          <h4 class="text-lg font-semibold mb-2">📈 Estadísticas de Presión</h4>
+          <ul class="list-disc pl-5 space-y-1">
+            <li><strong>Media:</strong> {{ statsData.Mean }}</li>
+            <li><strong>Mediana:</strong> {{ statsData.Median }}</li>
+            <li><strong>Desviación estándar:</strong> {{ statsData.STD }}</li>
+            <li><strong>Máximo:</strong> {{ statsData.Max }}</li>
+            <li><strong>Mínimo:</strong> {{ statsData.Min }}</li>
+            <li><strong>Moda:</strong> {{ statsData.Mode }}</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -44,12 +75,12 @@
     <div class="p-6 bg-white">
       <div class="bg-white rounded-xl p-4 shadow h-[300px]">
         <h2 class="text-lg font-semibold mb-4 text-gray-800">
-          Distribución Gaussiana de la Presión (últimas 24 horas)
+          Distribución Gaussiana de la Presión (últimas 24 horas)
         </h2>
-        <p-chart *ngIf="distribucionChart" 
-                 [type]="distribucionChart.type" 
-                 [data]="distribucionChart.data" 
-                 [options]="distribucionChart.options" 
+        <p-chart *ngIf="distribucionChart"
+                 [type]="distribucionChart.type"
+                 [data]="distribucionChart.data"
+                 [options]="distribucionChart.options"
                  class="w-full h-[300px]">
         </p-chart>
       </div>

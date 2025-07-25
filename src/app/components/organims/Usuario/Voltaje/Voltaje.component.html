@@ -33,6 +33,29 @@
         <div class="p-4 rounded-xl shadow text-center text-lg font-bold bg-purple-100 text-purple-800">
           🔋 Potencia actual: {{ potencia }} W
         </div>
+
+        <!-- Botón para mostrar estadísticas -->
+        <div class="mt-4">
+          <button 
+            class="w-full py-2 px-4 bg-yellow-500 text-white font-semibold rounded-xl shadow-md transition-all duration-300 transform hover:bg-yellow-600 hover:scale-105 hover:shadow-lg active:scale-95"
+            (click)="obtenerStatsVoltaje()"
+          >
+            📊 Mostrar Estadísticas
+          </button>
+        </div>
+
+        <!-- Estadísticas -->
+        <div *ngIf="mostrarStats && statsData" class="bg-white p-4 rounded shadow text-sm">
+          <h4 class="text-lg font-semibold mb-2">📈 Estadísticas de Voltaje</h4>
+          <ul class="list-disc pl-5 space-y-1">
+            <li><strong>Media:</strong> {{ statsData.Mean }}</li>
+            <li><strong>Mediana:</strong> {{ statsData.Median }}</li>
+            <li><strong>Desviación estándar:</strong> {{ statsData.STD }}</li>
+            <li><strong>Máximo:</strong> {{ statsData.Max }}</li>
+            <li><strong>Mínimo:</strong> {{ statsData.Min }}</li>
+            <li><strong>Moda:</strong> {{ statsData.Mode }}</li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>

@@ -1,15 +1,17 @@
+//Voltaje.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ChartModule } from 'primeng/chart';
 import { SideNavComponent } from '../../sidenav/sidenav.component';
 import { WsIna219Service } from '../../../../services/Voltaje.service';
 import { Subscription } from 'rxjs';
-import { NgClass } from '@angular/common';
+import { SensorService } from '../../../../services/sensor.service';
+import { NgClass, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-voltaje',
   templateUrl: './Voltaje.component.html',
   standalone: true,
-  imports: [ChartModule, SideNavComponent,NgClass],
+  imports: [ChartModule, SideNavComponent, NgClass, NgIf],
 })
 export class VoltajeComponent implements OnInit, OnDestroy {
   voltaje: number = 0;
@@ -26,14 +28,19 @@ export class VoltajeComponent implements OnInit, OnDestroy {
   private corrienteData: number[] = [];
   private potenciaData: number[] = [];
 
-  constructor(private wsInaService: WsIna219Service) {}
+  mostrarStats = false;
+  statsData: any = null;
+
+  constructor(
+    private wsInaService: WsIna219Service,
+    private sensorService: SensorService
+  ) {}
 
   ngOnInit() {
     this.initChart();
     this.subscription = this.wsInaService.getMessages().subscribe((data) => {
       this.sensorConectado = true;
 
-      // ✅ Usar los campos correctos del WebSocket
       this.voltaje = data.voltaje;
       this.corriente = data.corriente;
       this.potencia = data.potencia;
@@ -44,7 +51,6 @@ export class VoltajeComponent implements OnInit, OnDestroy {
       this.corrienteData.push(this.corriente);
       this.potenciaData.push(this.potencia);
 
-      // Mantener tamaño fijo de datos
       if (this.labels.length > this.maxDataPoints) {
         this.labels.shift();
         this.voltajeData.shift();
@@ -52,7 +58,6 @@ export class VoltajeComponent implements OnInit, OnDestroy {
         this.potenciaData.shift();
       }
 
-      // Actualizar gráfica
       this.inaChart.data.labels = [...this.labels];
       this.inaChart.data.datasets[0].data = [...this.voltajeData];
       this.inaChart.data.datasets[1].data = [...this.corrienteData];
@@ -113,6 +118,18 @@ export class VoltajeComponent implements OnInit, OnDestroy {
         },
       },
     };
+  }
+
+  obtenerStatsVoltaje() {
+    this.sensorService.getVoltageStats().subscribe({
+      next: (data) => {
+        this.statsData = data.basic_stats;
+        this.mostrarStats = true;
+      },
+      error: (err) => {
+        console.error('Error al obtener estadísticas de voltaje:', err);
+      },
+    });
   }
 
   ngOnDestroy(): void {
