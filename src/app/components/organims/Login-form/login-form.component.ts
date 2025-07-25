@@ -194,38 +194,86 @@ export class loginFormComponent implements AfterViewInit, OnDestroy {
   }
 
   onRegister() {
+    if (!this.registerData.username || !this.registerData.email || !this.registerData.password) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Todos los campos son obligatorios'
+        });
+        return;
+    }
+      // Validación de contraseñas coincidentes
     if (this.registerData.password !== this.registerData.confirmPassword) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Las contraseñas no coinciden'
-      });
-      return;
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Las contraseñas no coinciden'
+        });
+        return;
     }
 
-    this.http.post<any>('http://3.223.148.111:8000/api/auth/email/register', {
-      email: this.registerData.email,
-      password: this.registerData.password,
-      username: this.registerData.username
-    }).subscribe({
-      next: res => {
+    // Validación de formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.registerData.email)) {
         Swal.fire({
-          icon: 'success',
-          title: 'Registro exitoso',
-          text: 'Ahora puedes iniciar sesión',
-          showConfirmButton: false,
-          timer: 2000
+            icon: 'error',
+            title: 'Error',
+            text: 'Por favor ingresa un email válido'
         });
-      },
-      error: err => {
+        return;
+    }
+
+    // Validación de longitud de contraseña
+    if (this.registerData.password.length < 8) {
         Swal.fire({
-          icon: 'error',
-          title: 'Error en el registro',
-          text: err.error?.error || 'Error desconocido'
+            icon: 'error',
+            title: 'Error',
+            text: 'La contraseña debe tener al menos 8 caracteres'
         });
-      }
-    });
-  }
+        return;
+    }
+
+    // Preparar los datos para el backend
+    const registrationData = {
+        email: this.registerData.email,
+        password: this.registerData.password,
+        username: this.registerData.username
+    };
+
+
+this.http.post<any>('http://3.223.148.111:8000/api/auth/email/register', registrationData)
+        .subscribe({
+            next: res => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Registro exitoso',
+                    text: 'Ahora puedes iniciar sesión',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+                // Resetear el formulario después de registro exitoso
+                this.registerData = {
+                    username: '',
+                    email: '',
+                    password: '',
+                    confirmPassword: ''
+                };
+            },
+            error: err => {
+                let errorMessage = 'Error desconocido';
+                if (err.error?.error) {
+                    errorMessage = err.error.error;
+                } else if (err.message) {
+                    errorMessage = err.message;
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error en el registro',
+                    text: errorMessage
+                });
+            }
+        });
+}
 
   handleGoogleLogin(response: any) {
     const idToken = response.credential;

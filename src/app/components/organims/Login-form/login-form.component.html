@@ -76,16 +76,16 @@
           </div>
         </div>
 
-        <div class="flip-card__back">
-          <div class="title">Sign up</div>
-          <form class="flip-card__form" (submit)="onRegister()">
-            <input [(ngModel)]="registerData.username" name="username" class="flip-card__input" placeholder="Name" type="text">
-            <input [(ngModel)]="registerData.email" name="email" class="flip-card__input" placeholder="Email" type="email">
-            <input [(ngModel)]="registerData.password" name="password" class="flip-card__input" placeholder="Password" type="password">
-            <input [(ngModel)]="registerData.confirmPassword" name="confirmPassword" class="flip-card__input" placeholder="Confirm Password" type="password">
-            <button class="flip-card__btn" type="submit">Confirm!</button>
-          </form>
-        </div>
+     <div class="flip-card__back">
+  <div class="title">Sign up</div>
+  <form class="flip-card__form" (submit)="onRegister()">
+    <input [(ngModel)]="registerData.username" name="username" class="flip-card__input" placeholder="Username" type="text" required>
+    <input [(ngModel)]="registerData.email" name="email" class="flip-card__input" placeholder="Email" type="email" required>
+    <input [(ngModel)]="registerData.password" name="password" class="flip-card__input" placeholder="Password" type="password" required minlength="8">
+    <input [(ngModel)]="registerData.confirmPassword" name="confirmPassword" class="flip-card__input" placeholder="Confirm Password" type="password" required>
+    <button class="flip-card__btn" type="submit">Confirm!</button>
+  </form>
+</div>
       </div>
     </label>
   </div>
