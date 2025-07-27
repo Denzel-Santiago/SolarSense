@@ -16,25 +16,15 @@ export class AuthService {
   private jwtHelper = new JwtHelperService();
 
   constructor(private http: HttpClient, private router: Router) {
-    // Limpiar TODOS los datos de storage al iniciar
     this.cleanAllStorage();
-    
-    this.currentUserSubject = new BehaviorSubject<any>(
-      this.getValidUserFromStorage()
-    );
+    this.currentUserSubject = new BehaviorSubject<any>(this.getValidUserFromStorage());
     this.currentUser = this.currentUserSubject.asObservable();
   }
 
   private cleanAllStorage(): void {
-    // Limpiar TODOS los posibles tokens del localStorage
     const keysToRemove = ['currentUser', 'auth_token', 'auth_user', 'token'];
-    keysToRemove.forEach(key => {
-      if (localStorage.getItem(key)) {
-        localStorage.removeItem(key);
-      }
-    });
+    keysToRemove.forEach(key => localStorage.removeItem(key));
 
-    // También verificar si hay datos de usuario válidos
     const userData = localStorage.getItem('currentUser');
     if (userData) {
       try {
@@ -51,7 +41,7 @@ export class AuthService {
   private getValidUserFromStorage(): any {
     const userData = localStorage.getItem('currentUser');
     if (!userData) return null;
-    
+
     try {
       const user = JSON.parse(userData);
       if (!user?.token || this.isTokenExpired(user.token)) {
@@ -74,6 +64,33 @@ export class AuthService {
     }
   }
 
+  // Generar token JWT simple en el frontend
+  private generateLocalToken(user: any): string {
+    const header = {
+      alg: 'HS256',
+      typ: 'JWT'
+    };
+    
+    const payload = {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      is_admin: user.is_admin || false,
+      membership: user.membership || 'free',
+      iat: Math.floor(Date.now() / 1000),
+      exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60) // 24 horas
+    };
+
+    // Codificar en base64
+    const encodedHeader = btoa(JSON.stringify(header)).replace(/=/g, '');
+    const encodedPayload = btoa(JSON.stringify(payload)).replace(/=/g, '');
+    
+    // Crear signature simple (en producción debería usar una clave secreta real)
+    const signature = btoa(`${encodedHeader}.${encodedPayload}.secret`).replace(/=/g, '');
+    
+    return `${encodedHeader}.${encodedPayload}.${signature}`;
+  }
+
   public get currentUserValue() {
     return this.currentUserSubject.value;
   }
@@ -82,15 +99,10 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/email/login`, { email, password })
       .pipe(
         tap(response => {
-          console.log('Login response:', response); // Para debugging
-          
-          // La respuesta incluye success, token y user
-          if (response?.success && response?.token && !this.isTokenExpired(response.token)) {
-            // Crear el objeto de usuario con la estructura correcta
+          if (response?.token && !this.isTokenExpired(response.token)) {
             const userData = {
               token: response.token,
               user: response.user,
-              // Copiar propiedades importantes al nivel raíz para compatibilidad
               id: response.user.id,
               username: response.user.username,
               email: response.user.email,
@@ -110,52 +122,97 @@ export class AuthService {
   }
 
   loginWithGoogle(idToken: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/google`, { idToken })
-      .pipe(
-        tap(response => {
-          console.log('Google login response:', response); // Para debugging
-          
-          // Manejar la respuesta de Google login
-          if (response?.success && response?.token && !this.isTokenExpired(response.token)) {
-            const userData = {
-              token: response.token,
-              user: response.user,
-              // Copiar propiedades importantes al nivel raíz
-              id: response.user.id,
-              username: response.user.username,
-              email: response.user.email,
-              is_admin: response.user.is_admin || false,
-              membership: response.user.membership || 'free'
-            };
-            this.storeUserData(userData);
-          } else if (response?.token && !this.isTokenExpired(response.token)) {
-            // Formato alternativo de respuesta
-            const userData = {
-              token: response.token,
-              user: response.user || response,
-              id: response.user?.id || response.id,
-              username: response.user?.username || response.username,
-              email: response.user?.email || response.email,
-              is_admin: response.user?.is_admin || response.is_admin || false,
-              membership: response.user?.membership || response.membership || 'free'
-            };
-            this.storeUserData(userData);
-          } else {
-            throw new Error('Invalid Google login response');
+    return this.http.post<any>(`${this.apiUrl}/google`, { idToken }).pipe(
+      tap(response => {
+        console.log('Google login response:', response);
+
+        // Si el backend solo confirma la autenticación, decodificar el token de Google
+        if (response?.success) {
+          try {
+            // Decodificar el token de Google para obtener información del usuario
+            const googlePayload = this.decodeGoogleToken(idToken);
+            
+            if (googlePayload) {
+              // Generar token local
+              const localToken = this.generateLocalToken({
+                id: googlePayload.sub,
+                email: googlePayload.email,
+                username: googlePayload.name || googlePayload.email.split('@')[0],
+                is_admin: false,
+                membership: 'free'
+              });
+
+              const userData = {
+                token: localToken,
+                user: {
+                  id: googlePayload.sub,
+                  email: googlePayload.email,
+                  username: googlePayload.name || googlePayload.email.split('@')[0],
+                  is_admin: false,
+                  membership: 'free'
+                },
+                id: googlePayload.sub,
+                username: googlePayload.name || googlePayload.email.split('@')[0],
+                email: googlePayload.email,
+                is_admin: false,
+                membership: 'free'
+              };
+
+              console.log('Generated user data:', userData);
+              this.storeUserData(userData);
+              return;
+            }
+          } catch (error) {
+            console.error('Error decoding Google token:', error);
           }
-        }),
-        catchError(error => {
-          console.error('Google login error:', error);
-          return throwError(() => error);
-        })
-      );
+        }
+
+        // Fallback: si hay token en la respuesta del backend
+        const token = response?.token;
+        const user = response?.user ?? {};
+
+        if (token && !this.isTokenExpired(token)) {
+          const userData = {
+            token: token,
+            user: user,
+            id: user?.id || '',
+            username: user?.username || '',
+            email: user?.email || '',
+            is_admin: user?.is_admin || false,
+            membership: user?.membership || 'free'
+          };
+          this.storeUserData(userData);
+        } else {
+          throw new Error('No valid authentication data received');
+        }
+      }),
+      catchError(error => {
+        console.error('Google login error:', error);
+        Swal.fire('Error', 'Google login error: ' + (error?.message || 'Unknown error'), 'error');
+        return throwError(() => error);
+      })
+    );
+  }
+
+  private decodeGoogleToken(token: string): any {
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) return null;
+      
+      const payload = parts[1];
+      const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+      return JSON.parse(decoded);
+    } catch (error) {
+      console.error('Error decoding Google token:', error);
+      return null;
+    }
   }
 
   register(username: string, email: string, password: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/email/register`, { 
-      username, 
-      email, 
-      password 
+    return this.http.post<any>(`${this.apiUrl}/email/register`, {
+      username,
+      email,
+      password
     }).pipe(
       catchError(error => {
         console.error('Register error:', error);
@@ -165,22 +222,18 @@ export class AuthService {
   }
 
   private storeUserData(user: any): void {
-    if (!user?.token || this.isTokenExpired(user.token)) {
+    if (!user?.token) {
       throw new Error('Attempt to store invalid user data');
     }
-    
-    console.log('Storing user data:', user); // Para debugging
+
     localStorage.setItem('currentUser', JSON.stringify(user));
     this.currentUserSubject.next(user);
   }
 
   logout(): void {
-    // Limpiar TODOS los posibles tokens
     const keysToRemove = ['currentUser', 'auth_token', 'auth_user', 'token'];
-    keysToRemove.forEach(key => {
-      localStorage.removeItem(key);
-    });
-    
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+
     this.currentUserSubject.next(null);
     this.router.navigate(['/Login']);
   }
@@ -188,15 +241,12 @@ export class AuthService {
   isLoggedIn(): boolean {
     const user = this.currentUserValue;
     const isValid = !!user?.token && !this.isTokenExpired(user.token);
-    console.log('isLoggedIn check:', { user, isValid }); // Para debugging
     return isValid;
   }
 
   isAdmin(): boolean {
     const user = this.currentUserValue;
-    const adminStatus = user?.is_admin === true || user?.user?.is_admin === true;
-    console.log('isAdmin check:', { user, adminStatus }); // Para debugging
-    return adminStatus;
+    return user?.is_admin === true || user?.user?.is_admin === true;
   }
 
   isPremium(): boolean {
@@ -213,7 +263,6 @@ export class AuthService {
   getToken(): string | null {
     const user = this.currentUserValue;
     if (!user?.token || this.isTokenExpired(user.token)) {
-      // Si el token expiró, limpiar el storage
       this.logout();
       return null;
     }

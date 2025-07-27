@@ -15,6 +15,7 @@ declare global {
 interface GooglePromptNotification {
   isNotDisplayed(): boolean;
   isSkippedMoment(): boolean;
+  getDismissedReason(): string;
 }
 
 @Component({
@@ -55,7 +56,7 @@ export class loginFormComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     // Solo inicializar Google si no está logueado
     if (!this.authService.isLoggedIn()) {
-      this.checkGoogleAndInitialize();
+      this.initializeGoogleAuth();
     }
   }
 
@@ -65,52 +66,64 @@ export class loginFormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private checkGoogleAndInitialize() {
+  private initializeGoogleAuth(): void {
     if (window.google?.accounts?.id) {
-      this.initializeGoogleLogin();
-      this.googleScriptLoaded = true;
-      this.googleInitialized = true;
+      this.setupGoogleAuth();
     } else {
-      this.loadGoogleScript(() => {
-        this.googleScriptLoaded = true;
-        this.initializeGoogleLogin();
+      this.loadGoogleScript().then(() => {
+        this.setupGoogleAuth();
+      }).catch(error => {
+        console.error('Failed to load Google script:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo cargar el servicio de Google. Por favor recarga la página.',
+          timer: 3000,
+          showConfirmButton: false
+        });
       });
     }
   }
 
-  private loadGoogleScript(callback: () => void) {
-    if (window.google?.accounts?.id) {
-      callback();
-      return;
+  private loadGoogleScript(): Promise<void> {
+    if (this.googleScriptLoaded) {
+      return Promise.resolve();
     }
 
-    if (document.querySelector('script[src="https://accounts.google.com/gsi/client"]')) {
-      const checkInterval = setInterval(() => {
-        if (window.google?.accounts?.id) {
-          clearInterval(checkInterval);
-          callback();
-        }
-      }, 100);
-      return;
-    }
+    return new Promise((resolve, reject) => {
+      // Verificar si ya existe el script
+      const existingScript = document.querySelector('script[src="https://accounts.google.com/gsi/client"]');
+      if (existingScript) {
+        const checkInterval = setInterval(() => {
+          if (window.google?.accounts?.id) {
+            clearInterval(checkInterval);
+            this.googleScriptLoaded = true;
+            resolve();
+          }
+        }, 100);
+        return;
+      }
 
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.defer = true;
-    script.onload = callback;
-    script.onerror = () => {
-      console.error('Error al cargar el script de Google');
-      setTimeout(() => this.loadGoogleScript(callback), 1000);
-    };
-    document.head.appendChild(script);
+      const script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.onload = () => {
+        this.googleScriptLoaded = true;
+        resolve();
+      };
+      script.onerror = () => {
+        reject(new Error('Failed to load Google script'));
+      };
+      document.head.appendChild(script);
+    });
   }
 
-  private initializeGoogleLogin() {
+  private setupGoogleAuth(): void {
     try {
       if (!window.google?.accounts?.id) {
         console.warn('Google API no está disponible aún');
-        setTimeout(() => this.initializeGoogleLogin(), 500);
+        setTimeout(() => this.setupGoogleAuth(), 500);
         return;
       }
 
@@ -140,11 +153,11 @@ export class loginFormComponent implements OnInit, AfterViewInit, OnDestroy {
       console.log('Google Auth initialized successfully');
     } catch (error) {
       console.error('Error initializing Google Auth:', error);
-      setTimeout(() => this.initializeGoogleLogin(), 1000);
+      setTimeout(() => this.setupGoogleAuth(), 1000);
     }
   }
 
-  onGoogleClick(event: Event) {
+  onGoogleClick(event: Event): void {
     event.preventDefault();
     event.stopPropagation();
     
@@ -177,7 +190,7 @@ export class loginFormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private showGoogleFallback() {
+  private showGoogleFallback(): void {
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
       `client_id=661193722643-3hgg12o628opmlgo4suq0bk707195qnc.apps.googleusercontent.com&` +
       `redirect_uri=${encodeURIComponent(window.location.origin)}&` +
@@ -189,7 +202,7 @@ export class loginFormComponent implements OnInit, AfterViewInit, OnDestroy {
     window.location.href = authUrl;
   }
 
-  onLogin() {
+  onLogin(): void {
     // Validaciones básicas
     if (!this.loginData.email || !this.loginData.password) {
       Swal.fire({
@@ -230,94 +243,46 @@ export class loginFormComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  onRegister() {
-    if (!this.registerData.username || !this.registerData.email || !this.registerData.password) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Todos los campos son obligatorios',
-            timer: 2000,
-            showConfirmButton: false
-        });
-        return;
+  onRegister(event: Event): void {
+    event.preventDefault();
+
+    const { username, email, password, confirmPassword } = this.registerData;
+
+    if (!username || !email || !password || !confirmPassword) {
+      Swal.fire('Error', 'Todos los campos son obligatorios', 'error');
+      return;
     }
 
-    if (this.registerData.password !== this.registerData.confirmPassword) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Las contraseñas no coinciden',
-            timer: 2000,
-            showConfirmButton: false
-        });
-        return;
+    if (password !== confirmPassword) {
+      Swal.fire('Error', 'Las contraseñas no coinciden', 'error');
+      return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(this.registerData.email)) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Por favor ingresa un email válido',
-            timer: 2000,
-            showConfirmButton: false
-        });
-        return;
+    if (!emailRegex.test(email)) {
+      Swal.fire('Error', 'Por favor ingresa un email válido', 'error');
+      return;
     }
 
-    if (this.registerData.password.length < 8) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'La contraseña debe tener al menos 8 caracteres',
-            timer: 2000,
-            showConfirmButton: false
-        });
-        return;
+    if (password.length < 8) {
+      Swal.fire('Error', 'La contraseña debe tener al menos 8 caracteres', 'error');
+      return;
     }
 
-    this.authService.register(
-      this.registerData.username,
-      this.registerData.email,
-      this.registerData.password
-    ).subscribe({
-      next: () => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Registro exitoso',
-          text: 'Ahora puedes iniciar sesión',
-          showConfirmButton: false,
-          timer: 2000
-        });
-        this.registerData = {
-          username: '',
-          email: '',
-          password: '',
-          confirmPassword: ''
-        };
-      },
-      error: err => {
-        console.error('Register error:', err);
-        let errorMessage = 'Error desconocido';
-        if (err.error?.error) {
-          errorMessage = err.error.error;
-        } else if (err.error?.message) {
-          errorMessage = err.error.message;
-        } else if (err.message) {
-          errorMessage = err.message;
+    this.authService.register(username, email, password)
+      .subscribe({
+        next: () => {
+          Swal.fire('Registro exitoso', 'Ahora puedes iniciar sesión', 'success');
+          this.registerData = { username: '', email: '', password: '', confirmPassword: '' };
+        },
+        error: err => {
+          const msg = err.error?.error || err.error?.message || err.message || 'Error desconocido';
+          Swal.fire('Error en el registro', msg, 'error');
         }
-        Swal.fire({
-          icon: 'error',
-          title: 'Error en el registro',
-          text: errorMessage,
-          timer: 3000,
-          showConfirmButton: false
-        });
-      }
-    });
+      });
   }
 
-  handleGoogleLogin(response: any) {
+  handleGoogleLogin(response: any): void {
     console.log('Google login response received:', response);
     
     if (!response?.credential) {
@@ -337,11 +302,11 @@ export class loginFormComponent implements OnInit, AfterViewInit, OnDestroy {
     
     this.authService.loginWithGoogle(idToken)
       .subscribe({
-        next: (response) => {
-          console.log('Google login successful:', response);
+        next: () => {
+          console.log('Google login successful');
           Swal.fire({
             icon: 'success',
-            title: 'Inicio con Google exitoso',
+            title: '¡Bienvenido!',
             showConfirmButton: false,
             timer: 1500
           }).then(() => {
@@ -353,7 +318,7 @@ export class loginFormComponent implements OnInit, AfterViewInit, OnDestroy {
           Swal.fire({
             icon: 'error',
             title: 'Error con Google',
-            text: err.error?.error || err.error?.message || 'Error al iniciar sesión con Google',
+            text: err.error?.message || 'Error al iniciar sesión con Google',
             timer: 3000,
             showConfirmButton: false
           });
@@ -361,7 +326,7 @@ export class loginFormComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  private redirectBasedOnRole() {
+  private redirectBasedOnRole(): void {
     console.log('Redirecting based on role...');
     console.log('Is admin:', this.authService.isAdmin());
     console.log('Current user:', this.authService.currentUserValue);
@@ -371,7 +336,6 @@ export class loginFormComponent implements OnInit, AfterViewInit, OnDestroy {
       this.router.navigate(['/Lista-Usuarios']);
     } else {
       console.log('Redirecting to user dashboard');
-      // Para usuarios free y premium, redirigir a Novedades
       this.router.navigate(['/Sensores/Novedades']);
     }
   }

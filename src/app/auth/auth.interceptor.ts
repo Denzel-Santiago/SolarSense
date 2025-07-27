@@ -9,7 +9,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   // Obtener la URL actual
   const reqUrl = req.url;
   
-  console.log('Interceptor - Request URL:', reqUrl); // Para debugging
+  console.log('Interceptor - Request URL:', reqUrl);
   
   // Lista completa de endpoints que NO deben tener token
   const isAuthRequest = reqUrl.includes('/auth/email/login') || 
@@ -20,8 +20,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
                        reqUrl.includes('/login') ||
                        reqUrl.includes('gsi/client');
   
-  console.log('Interceptor - Is auth request:', isAuthRequest); // Para debugging
-  console.log('Interceptor - User logged in:', authService.isLoggedIn()); // Para debugging
+  console.log('Interceptor - Is auth request:', isAuthRequest);
+  console.log('Interceptor - User logged in:', authService.isLoggedIn());
   
   // SOLO agregar token si:
   // 1. NO es una petición de autenticación
@@ -31,7 +31,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const authToken = authService.getToken();
     
     if (authToken) {
-      console.log('Interceptor - Adding token to request'); // Para debugging
+      console.log('Interceptor - Adding token to request');
       // Clonar la solicitud y agregar el token
       const authReq = req.clone({
         setHeaders: {
@@ -42,6 +42,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     }
   }
   
-  console.log('Interceptor - Request without token'); // Para debugging
+  console.log('Interceptor - Request without token');
   return next(req);
 };
