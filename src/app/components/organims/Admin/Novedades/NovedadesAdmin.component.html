@@ -38,20 +38,35 @@
           </div>
 
           <!-- Cuerpo -->
-          <div class="bg-white px-6 py-4 relative">
-            <h3 class="uppercase text-sm font-semibold mb-2 text-black">{{ novedad.title }}</h3>
-            <p class="text-sm text-gray-800">{{ novedad.content }}</p>
+<div class="bg-white px-6 py-4 relative">
+  <h3 class="uppercase text-sm font-semibold mb-2 text-black">{{ novedad.title }}</h3>
+  <p class="text-sm text-gray-800">{{ novedad.content }}</p>
 
-            <!-- Botones flotantes -->
-            <div class="absolute top-3 right-3 flex gap-2">
-              <button (click)="editar(i)">
-                <img src="assets/editar.png" alt="Editar" class="w-8 h-8 hover:scale-110 transition" />
-              </button>
-              <button (click)="eliminar(i)">
-                <img src="assets/borrar.png" alt="Eliminar" class="w-8 h-8 hover:scale-110 transition" />
-              </button>
-            </div>
-          </div>
+  <!-- Botones flotantes adaptados a responsivo -->
+  <div class="absolute top-3 right-3 hidden md:flex gap-2">
+    <button (click)="editar(i)">
+      <img src="assets/editar.png" alt="Editar" class="w-8 h-8 hover:scale-110 transition" />
+    </button>
+    <button (click)="eliminar(i)">
+      <img src="assets/borrar.png" alt="Eliminar" class="w-8 h-8 hover:scale-110 transition" />
+    </button>
+  </div>
+
+  <!-- Botones visibles solo en móvil -->
+  <div class="flex justify-end gap-4 mt-4 md:hidden">
+    <button (click)="editar(i)"
+            class="flex items-center gap-1 px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 text-sm">
+      <img src="assets/editar.png" alt="Editar" class="w-4 h-4" />
+      Editar
+    </button>
+    <button (click)="eliminar(i)"
+            class="flex items-center gap-1 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm">
+      <img src="assets/borrar.png" alt="Borrar" class="w-4 h-4" />
+      Eliminar
+    </button>
+  </div>
+</div>
+
         </div>
       </div>
 

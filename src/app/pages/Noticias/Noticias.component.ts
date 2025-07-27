@@ -17,6 +17,9 @@ export class NoticiasComponent implements OnInit {
     'assets/Noticias/Noticia2.png',
     'assets/Noticias/Noticia3.png',
     'assets/Noticias/Noticia4.png',
+    'assets/Noticias/Noticia5.png',
+    'assets/Noticias/Noticia6.png',
+    'assets/Noticias/Noticia7.png',
 
   ];
 

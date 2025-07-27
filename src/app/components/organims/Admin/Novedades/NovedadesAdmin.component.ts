@@ -124,6 +124,8 @@ guardarCambios() {
 }
 
  eliminar(index: number) {
+  const novedadAEliminar = this.novedades[index];
+
   Swal.fire({
     title: '¿Estás seguro?',
     text: 'Esta novedad se eliminará permanentemente',
@@ -135,18 +137,25 @@ guardarCambios() {
     cancelButtonText: 'Cancelar'
   }).then((result) => {
     if (result.isConfirmed) {
-      // Aquí va tu lógica para eliminar
-      this.novedades.splice(index, 1); // o llama a tu servicio de eliminación
-
-      Swal.fire({
-        title: '¡Eliminado!',
-        text: 'La novedad ha sido eliminada.',
-        icon: 'success',
-        timer: 1500,
-        showConfirmButton: false
+      this.novedadesService.delete(novedadAEliminar.id!).subscribe({
+        next: () => {
+          Swal.fire({
+            title: '¡Eliminado!',
+            text: 'La novedad ha sido eliminada.',
+            icon: 'success',
+            timer: 1500,
+            showConfirmButton: false
+          });
+          this.cargarNovedades(); // recarga la lista después de eliminar
+        },
+        error: (err) => {
+          Swal.fire('Error', 'No se pudo eliminar la novedad.', 'error');
+          console.error(err);
+        }
       });
     }
   });
 }
+
 
 }

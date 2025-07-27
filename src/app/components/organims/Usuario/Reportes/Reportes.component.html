@@ -1,0 +1,54 @@
+<div class="flex h-screen overflow-hidden">
+  <app-side-nav></app-side-nav>
+
+  <div class="flex-1 flex flex-col overflow-auto bg-gray-100">
+    <!-- Título -->
+    <div class="p-6 bg-[#1f3a2e] text-white flex justify-between items-center">
+      <div class="text-3xl font-bold">LISTA DE REPORTES</div>
+    </div>
+
+    <div class="p-6 bg-white space-y-10 flex-grow overflow-y-auto">
+
+      <!-- Tabla de Reportes -->
+      <div class="w-full max-w-7xl mx-auto rounded-2xl overflow-hidden border border-[#C2DB95] shadow-md">
+        <div class="bg-[#5A6F21] px-4 py-3 text-white text-center font-bold text-lg">
+          Reportes Generados
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm text-center text-black">
+            <thead class="bg-[#C2DB95] text-black uppercase text-xs">
+              <tr>
+                <th class="px-4 py-2">ID</th>
+                <th class="px-4 py-2">Usuario ID</th>
+                <th class="px-4 py-2">Nombre de Archivo</th>
+                <th class="px-4 py-2">Fecha de Creación</th>
+                <th class="px-4 py-2">Formato</th>
+                <th class="px-4 py-2">Opciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let reporte of reportes; let i = index"
+                  [ngClass]="{ 'bg-[#F0FFCD]': i % 2 === 0, 'bg-[#C2DB95]': i % 2 !== 0 }">
+                <td class="px-4 py-2">{{ reporte.id }}</td>
+                <td class="px-4 py-2">{{ reporte.user_id }}</td>
+                <td class="px-4 py-2 text-blue-700 underline">{{ reporte.file_name }}</td>
+                <td class="px-4 py-2">{{ reporte.created_at | date:'short' }}</td>
+                <td class="px-4 py-2">{{ reporte.format }}</td>
+                <td class="px-4 py-2 flex justify-center gap-3">
+                  <a [href]="'http://3.223.148.111:8000' + reporte.storage_path" target="_blank">
+                    <img src="assets/download.png" class="w-10 h-10 hover:scale-110" alt="Descargar" />
+                  </a>
+                </td>
+              </tr>
+              <tr *ngFor="let empty of filasVaciasReportes">
+                <td colspan="6" class="h-12 bg-[#F0FFCD]"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -16,6 +16,7 @@ import { ListaUsuariosComponent } from './components/organims/Admin/Lista-Usuari
 import { MembresiasComponent } from './components/organims/Admin/Membresias/Membresias.component';
 import { NovedadesAdminComponent } from './components/organims/Admin/Novedades/NovedadesAdmin.component';
 import { NoticiasComponent } from './pages/Noticias/Noticias.component';
+import { ReportesComponent } from './components/organims/Usuario/Reportes/Reportes.component';
 
 export const routes: Routes = [
   { 
@@ -66,7 +67,7 @@ export const routes: Routes = [
       { path: 'PresionAtmosferica', component: PresionAtmosfericaComponent },
       { path: 'Novedades', component: NovedadesComponent },
       { path: 'Perfil', component: PerfilComponent },
-      // Cambiar la redirección por defecto a Novedades
+      { path: 'Reporte', component: ReportesComponent },
       { path: '', redirectTo: 'Novedades', pathMatch: 'full' }
     ]
   },
