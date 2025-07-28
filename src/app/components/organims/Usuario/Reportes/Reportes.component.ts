@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-reportes',
   standalone: true,
-  imports: [NgFor, NgIf, DatePipe, FormsModule, SideNavComponent,NgClass],
+  imports: [NgFor, DatePipe, FormsModule, SideNavComponent,NgClass],
   templateUrl: './Reportes.component.html',
 })
 export class ReportesComponent implements OnInit {
