@@ -14,6 +14,7 @@ export class SideNavAdminComponent implements OnInit, OnDestroy {
     { icon: 'assets/usuario.png', label: 'Lista-Usuarios' },
     { icon: 'assets/card.png', label: 'Membresias' },
     { icon: 'assets/novedad.png', label: 'Novedades' },
+    { icon: 'assets/alert.png', label: 'Alerta' },
     { icon: 'assets/salir.png', label: 'Salir' }
   ];
 
@@ -65,6 +66,9 @@ export class SideNavAdminComponent implements OnInit, OnDestroy {
         break;
       case 'Novedades':
         this.router.navigate(['Novedades-Admin']);
+        break;
+        case 'Alerta':
+        this.router.navigate(['Alerta']);
         break;
     }
   }

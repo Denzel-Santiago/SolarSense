@@ -1,0 +1,86 @@
+<div class="flex h-screen overflow-hidden">
+  <app-side-nav-Admin></app-side-nav-Admin>
+
+  <div class="flex-1 flex flex-col overflow-auto bg-gray-100">
+    <!-- Título -->
+    <div class="p-6 bg-[#1f3a2e] text-white flex justify-between items-center">
+      <div class="text-3xl font-bold">ALERTAS</div>
+    </div>
+
+    <div class="p-6 bg-white space-y-10 flex-grow overflow-y-auto">
+      <!-- USUARIOS NORMALES -->
+      <div class="w-full max-w-7xl mx-auto rounded-2xl overflow-hidden border border-[#C2DB95] shadow-md">
+        <div class="bg-[#5A6F21] px-4 py-3 text-white text-center font-bold text-lg">
+          Usuarios Normales
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm text-center text-black">
+            <thead class="bg-[#C2DB95] text-black uppercase text-xs">
+              <tr>
+                <th class="px-4 py-2">ID</th>
+                <th class="px-4 py-2">Nombre</th>
+                <th class="px-4 py-2">Correo</th>
+                <th class="px-4 py-2">Alerta</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let usuario of usuariosNormales; let i = index"
+                  [ngClass]="{ 'bg-[#F0FFCD]': i % 2 === 0, 'bg-[#C2DB95]': i % 2 !== 0 }">
+                <td class="px-4 py-2">{{ usuario.id }}</td>
+                <td class="px-4 py-2">{{ usuario.nombre }}</td>
+                <td class="px-4 py-2 text-blue-700 underline">{{ usuario.correo }}</td>
+                <td class="px-4 py-2">
+                  <button (click)="enviarAlerta(usuario.correo)"
+                          class="px-4 py-2 bg-[#1f3a2e] text-white rounded hover:bg-[#355e47]">
+                    Enviar alerta
+                  </button>
+                </td>
+              </tr>
+              <tr *ngFor="let empty of filasVaciasNormales">
+                <td colspan="4" class="h-12 bg-[#F0FFCD]"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- USUARIOS GOOGLE -->
+      <div class="w-full max-w-7xl mx-auto rounded-2xl overflow-hidden border border-[#C2DB95] shadow-md">
+        <div class="bg-[#5A6F21] px-4 py-3 text-white text-center font-bold text-lg">
+          Usuarios Google
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm text-center text-black">
+            <thead class="bg-[#C2DB95] text-black uppercase text-xs">
+              <tr>
+                <th class="px-4 py-2">ID</th>
+                <th class="px-4 py-2">Nombre</th>
+                <th class="px-4 py-2">Correo</th>
+                <th class="px-4 py-2">Alerta</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let usuario of usuariosGoogle; let i = index"
+                  [ngClass]="{ 'bg-[#F0FFCD]': i % 2 === 0, 'bg-[#C2DB95]': i % 2 !== 0 }">
+                <td class="px-4 py-2">{{ usuario.id }}</td>
+                <td class="px-4 py-2">{{ usuario.nombre }}</td>
+                <td class="px-4 py-2 text-blue-700 underline">{{ usuario.correo }}</td>
+                <td class="px-4 py-2">
+                  <button (click)="enviarAlerta(usuario.correo)"
+                          class="px-4 py-2 bg-[#1f3a2e] text-white rounded hover:bg-[#355e47]">
+                    Enviar alerta
+                  </button>
+                </td>
+              </tr>
+              <tr *ngFor="let empty of filasVaciasGoogle">
+                <td colspan="4" class="h-12 bg-[#F0FFCD]"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

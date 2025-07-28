@@ -17,6 +17,7 @@ import { MembresiasComponent } from './components/organims/Admin/Membresias/Memb
 import { NovedadesAdminComponent } from './components/organims/Admin/Novedades/NovedadesAdmin.component';
 import { NoticiasComponent } from './pages/Noticias/Noticias.component';
 import { ReportesComponent } from './components/organims/Usuario/Reportes/Reportes.component';
+import { AlertaComponent } from './components/organims/Admin/Alertas/Alerta.component';
 
 export const routes: Routes = [
   { 
@@ -50,6 +51,12 @@ export const routes: Routes = [
   { 
     path: 'Novedades-Admin', 
     component: NovedadesAdminComponent,
+    canActivate: [AuthGuard],
+    data: { roles: ['admin'] }
+  },
+  { 
+    path: 'Alerta', 
+    component: AlertaComponent,
     canActivate: [AuthGuard],
     data: { roles: ['admin'] }
   },
