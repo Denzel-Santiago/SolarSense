@@ -77,6 +77,8 @@ export class AuthService {
       username: user.username,
       is_admin: user.is_admin || false,
       membership: user.membership || 'free',
+      uid: user.uid || null,
+      auth_type: user.auth_type || 'email',
       iat: Math.floor(Date.now() / 1000),
       exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60) // 24 horas
     };
@@ -102,12 +104,16 @@ export class AuthService {
           if (response?.token && !this.isTokenExpired(response.token)) {
             const userData = {
               token: response.token,
-              user: response.user,
+              user: {
+                ...response.user,
+                auth_type: 'email'
+              },
               id: response.user.id,
               username: response.user.username,
               email: response.user.email,
               is_admin: response.user.is_admin,
-              membership: response.user.membership || 'free'
+              membership: response.user.membership || 'free',
+              auth_type: 'email'
             };
             this.storeUserData(userData);
           } else {
@@ -128,39 +134,51 @@ export class AuthService {
 
         if (response?.success) {
           // Si el backend devuelve datos del usuario directamente
-          if (response.user && response.user.id) {
+          if (response.user && (response.user.id || response.user.uid)) {
             const userData = response.user;
             
-            // Generar token local con el ID interno de la BD
+            // Usar el UID de Google como identificador principal para usuarios de Google
+            const userIdentifier = userData.uid || userData.id;
+            
+            // Generar token local
             const localToken = this.generateLocalToken({
-              id: userData.id, // Usar el ID numérico interno de la BD
+              id: userIdentifier,
               email: userData.email,
               username: userData.username || userData.display_name,
               is_admin: userData.is_admin || false,
-              membership: userData.membership || 'free'
+              membership: userData.membership || 'free',
+              uid: userData.uid,
+              auth_type: 'google'
             });
 
             const finalUserData = {
               token: localToken,
               user: {
-                id: userData.id, // ID numérico interno
+                id: userData.id, // ID numérico interno de la BD (si existe)
+                uid: userData.uid, // UID de Google
                 email: userData.email,
                 username: userData.username || userData.display_name,
                 display_name: userData.display_name,
                 is_admin: userData.is_admin || false,
                 membership: userData.membership || 'free',
-                auth_type: userData.auth_type,
+                auth_type: 'google',
                 photo_url: userData.photo_url,
-                provider: userData.provider
+                provider: userData.provider,
+                last_login: userData.last_login,
+                created_at: userData.created_at,
+                is_active: userData.is_active
               },
-              id: userData.id, // ID numérico interno
+              id: userIdentifier, // Usar UID como identificador principal
+              uid: userData.uid,
               username: userData.username || userData.display_name,
               email: userData.email,
               is_admin: userData.is_admin || false,
-              membership: userData.membership || 'free'
+              membership: userData.membership || 'free',
+              auth_type: 'google',
+              provider: 'google'
             };
 
-            console.log('Final user data with internal ID:', finalUserData);
+            console.log('Final Google user data:', finalUserData);
             this.storeUserData(finalUserData);
             return;
           }
@@ -170,19 +188,21 @@ export class AuthService {
           
           if (googlePayload) {
             // Generar token local con datos del token de Google
-            // NOTA: El ID será el UID de Google hasta que obtengamos el ID interno
             const localToken = this.generateLocalToken({
               id: googlePayload.sub,
               email: googlePayload.email,
               username: googlePayload.name || googlePayload.email.split('@')[0],
               is_admin: false,
-              membership: 'free'
+              membership: 'free',
+              uid: googlePayload.sub,
+              auth_type: 'google'
             });
 
             const userData = {
               token: localToken,
               user: {
-                id: googlePayload.sub, // UID de Google temporalmente
+                id: null, // No tenemos ID interno aún
+                uid: googlePayload.sub, // UID de Google
                 email: googlePayload.email,
                 username: googlePayload.name || googlePayload.email.split('@')[0],
                 display_name: googlePayload.name,
@@ -192,15 +212,17 @@ export class AuthService {
                 photo_url: googlePayload.picture || '',
                 provider: 'google'
               },
-              id: googlePayload.sub,
+              id: googlePayload.sub, // Usar UID como identificador
+              uid: googlePayload.sub,
               username: googlePayload.name || googlePayload.email.split('@')[0],
               email: googlePayload.email,
               is_admin: false,
               membership: 'free',
-              needsInternalId: true // Flag para indicar que necesitamos obtener el ID interno
+              auth_type: 'google',
+              provider: 'google'
             };
 
-            console.log('Generated user data (needs internal ID):', userData);
+            console.log('Generated Google user data from token:', userData);
             this.storeUserData(userData);
             return;
           }
@@ -216,13 +238,6 @@ export class AuthService {
         return throwError(() => error);
       })
     );
-  }
-
-  // Método para obtener el ID interno del usuario usando su email
-  public getUserInternalId(email: string): Observable<any> {
-    // Como no existe el endpoint por email, podríamos hacer una búsqueda diferente
-    // Por ahora, esto quedaría como un método placeholder
-    return throwError(() => new Error('Endpoint not available'));
   }
 
   private decodeGoogleToken(token: string): any {
@@ -291,6 +306,11 @@ export class AuthService {
     return membership === 'free' || (!membership && !this.isAdmin());
   }
 
+  isGoogleUser(): boolean {
+    const user = this.currentUserValue;
+    return user?.auth_type === 'google' || user?.user?.auth_type === 'google';
+  }
+
   getToken(): string | null {
     const user = this.currentUserValue;
     if (!user?.token || this.isTokenExpired(user.token)) {
@@ -305,5 +325,26 @@ export class AuthService {
     if (this.isAdmin()) return 'admin';
     if (this.isPremium()) return 'premium';
     return 'free';
+  }
+
+  // Método para obtener el UID de Google del usuario actual
+  getGoogleUID(): string | null {
+    const user = this.currentUserValue;
+    if (!this.isGoogleUser()) return null;
+    
+    return user?.uid || user?.user?.uid || (typeof user?.id === 'string' ? user.id : null);
+  }
+
+  // Método para obtener el ID interno del usuario actual
+  getInternalId(): number | null {
+    const user = this.currentUserValue;
+    
+    // Para usuarios regulares
+    if (!this.isGoogleUser()) {
+      return user?.id || user?.user?.id || null;
+    }
+    
+    // Para usuarios de Google, el ID interno está en user.id (numérico)
+    return user?.user?.id || null;
   }
 }

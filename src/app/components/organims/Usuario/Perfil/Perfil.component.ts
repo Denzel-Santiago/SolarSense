@@ -24,7 +24,8 @@ export class PerfilComponent implements OnInit {
     last_login: '',
     created_at: '',
     is_active: false,
-    provider: ''
+    provider: '',
+    uid: ''
   };
 
   raspberries = [
@@ -66,59 +67,110 @@ export class PerfilComponent implements OnInit {
 
     console.log('Current user data:', currentUser);
 
-    // Obtener el ID interno de la BD
-    let userId: number;
-    
-    // Priorizar el ID del objeto user si existe y es numérico
-    if (currentUser.user && typeof currentUser.user.id === 'number') {
-      userId = currentUser.user.id;
-    } 
-    // Si no, usar el ID directo si es numérico
-    else if (typeof currentUser.id === 'number') {
-      userId = currentUser.id;
-    }
-    // Si el ID es string, intentar convertirlo
-    else if (typeof currentUser.id === 'string' && !isNaN(Number(currentUser.id))) {
-      userId = Number(currentUser.id);
-    }
-    // Para usuarios de Google que aún no tienen ID interno, necesitamos buscarlo
-    else if (currentUser.needsInternalId || (typeof currentUser.id === 'string' && currentUser.user?.auth_type === 'google')) {
-      console.log('Usuario de Google sin ID interno, intentando obtener datos del servidor...');
-      this.buscarUsuarioGoogle(currentUser);
-      return;
-    }
-    else {
-      this.errorMessage = 'No se pudo obtener el ID interno del usuario';
-      this.isLoading = false;
-      return;
-    }
+    // Verificar si es un usuario de Google
+    const isGoogleUser = currentUser.user?.auth_type === 'google' || 
+                        currentUser.auth_type === 'google' ||
+                        currentUser.user?.provider === 'google' ||
+                        currentUser.provider === 'google';
 
-    console.log('Usando ID interno para petición:', userId);
-    this.obtenerDatosUsuario(userId);
+    if (isGoogleUser) {
+      // Para usuarios de Google, usar el UID
+      let googleUid: string;
+      
+      // Buscar el UID en diferentes ubicaciones posibles
+      if (currentUser.user?.uid) {
+        googleUid = currentUser.user.uid;
+      } else if (currentUser.uid) {
+        googleUid = currentUser.uid;
+      } else if (currentUser.user?.id && typeof currentUser.user.id === 'string') {
+        googleUid = currentUser.user.id;
+      } else if (currentUser.id && typeof currentUser.id === 'string') {
+        googleUid = currentUser.id;
+      } else {
+        this.errorMessage = 'No se pudo obtener el UID de Google del usuario';
+        this.isLoading = false;
+        return;
+      }
+
+      console.log('Usuario de Google detectado, usando UID:', googleUid);
+      this.obtenerDatosUsuarioGoogle(googleUid);
+      
+    } else {
+      // Para usuarios regulares (email/password), usar ID numérico
+      let userId: number;
+      
+      if (currentUser.user && typeof currentUser.user.id === 'number') {
+        userId = currentUser.user.id;
+      } else if (typeof currentUser.id === 'number') {
+        userId = currentUser.id;
+      } else if (typeof currentUser.id === 'string' && !isNaN(Number(currentUser.id))) {
+        userId = Number(currentUser.id);
+      } else {
+        this.errorMessage = 'No se pudo obtener el ID interno del usuario';
+        this.isLoading = false;
+        return;
+      }
+
+      console.log('Usuario regular detectado, usando ID interno:', userId);
+      this.obtenerDatosUsuarioRegular(userId);
+    }
   }
 
-  private buscarUsuarioGoogle(currentUser: any) {
-    // Para usuarios de Google, intentaremos con algunos IDs posibles
-    // Si el backend devuelve el ID correcto durante el login, esto no debería ser necesario
+  private obtenerDatosUsuarioGoogle(uid: string) {
+    console.log('Obteniendo datos de usuario de Google con UID:', uid);
     
-    // Primero, intentar con el email para hacer una petición que nos pueda dar pistas
-    // o simplemente mostrar un error más específico
-    
-    console.log('Intentando obtener datos de usuario de Google...');
-    console.log('Email del usuario:', currentUser.email);
-    
-    // Como no tenemos un endpoint directo por email, 
-    // mostraremos un mensaje más específico
-    this.errorMessage = `No se pudo obtener el ID interno del usuario de Google. 
-                        Email: ${currentUser.email}. 
-                        Es posible que el backend necesite devolver más información durante el login con Google.`;
-    this.isLoading = false;
+    this.http.get(`http://3.223.148.111:8000/api/auth/google/users/${uid}`)
+      .subscribe({
+        next: (response: any) => {
+          console.log('Respuesta del servidor (Google):', response);
+          
+          if (response.success && response.user) {
+            const userData = response.user;
+            this.usuario = {
+              id: userData.id,
+              nombre: userData.display_name || userData.username || 'Usuario de Google',
+              usuario: userData.username || userData.display_name || 'N/A',
+              displayName: userData.display_name || 'N/A',
+              correo: userData.email,
+              imagen: userData.photo_url || '',
+              auth_type: userData.auth_type,
+              last_login: userData.last_login,
+              created_at: userData.created_at,
+              is_active: userData.is_active,
+              provider: userData.provider,
+              uid: userData.uid
+            };
+            
+            console.log('Datos del usuario Google cargados:', this.usuario);
+          } else {
+            this.errorMessage = 'No se encontraron datos del usuario de Google';
+          }
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Error al cargar usuario de Google:', error);
+          
+          if (error.status === 404) {
+            this.errorMessage = 'Usuario de Google no encontrado en el servidor';
+          } else if (error.status === 401) {
+            this.errorMessage = 'No autorizado para acceder a los datos del usuario';
+          } else {
+            this.errorMessage = 'Error al cargar los datos del usuario de Google';
+          }
+          
+          this.isLoading = false;
+        }
+      });
   }
 
-  private obtenerDatosUsuario(userId: number) {
+  private obtenerDatosUsuarioRegular(userId: number) {
+    console.log('Obteniendo datos de usuario regular con ID:', userId);
+    
     this.http.get(`http://3.223.148.111:8000/api/auth/public/users/${userId}`)
       .subscribe({
         next: (response: any) => {
+          console.log('Respuesta del servidor (Regular):', response);
+          
           if (response.success && response.user) {
             const userData = response.user;
             this.usuario = {
@@ -132,24 +184,38 @@ export class PerfilComponent implements OnInit {
               last_login: userData.last_login,
               created_at: userData.created_at,
               is_active: userData.is_active,
-              provider: userData.provider
+              provider: userData.provider || 'email',
+              uid: ''
             };
             
-            console.log('Datos del usuario cargados:', this.usuario);
+            console.log('Datos del usuario regular cargados:', this.usuario);
           } else {
             this.errorMessage = 'No se encontraron datos del usuario';
           }
           this.isLoading = false;
         },
         error: (error) => {
-          console.error('Error al cargar usuario:', error);
-          this.errorMessage = 'Error al cargar los datos del usuario';
+          console.error('Error al cargar usuario regular:', error);
+          
+          if (error.status === 404) {
+            this.errorMessage = 'Usuario no encontrado en el servidor';
+          } else if (error.status === 401) {
+            this.errorMessage = 'No autorizado para acceder a los datos del usuario';
+          } else {
+            this.errorMessage = 'Error al cargar los datos del usuario';
+          }
+          
           this.isLoading = false;
         }
       });
   }
 
   abrirModal() {
+    // Solo permitir edición para usuarios que no son de Google
+    if (this.usuario.auth_type === 'google') {
+      return;
+    }
+
     this.usuarioTemporal = { 
       nombre: this.usuario.nombre, 
       usuario: this.usuario.usuario,
@@ -166,6 +232,12 @@ export class PerfilComponent implements OnInit {
   }
 
   guardarCambios() {
+    // Solo para usuarios que no son de Google
+    if (this.usuario.auth_type === 'google') {
+      this.errorMessage = 'Los usuarios de Google no pueden editar su perfil desde aquí';
+      return;
+    }
+
     this.isLoading = true;
     const userId = this.usuario.id;
     
@@ -182,7 +254,10 @@ export class PerfilComponent implements OnInit {
       photo_url: this.imagenPreview
     };
 
-    this.http.put(`http://3.223.148.111:8000/api/auth/public/users/${userId}/update`, datosActualizados)
+    // Usar el endpoint apropiado según el tipo de usuario
+    const updateUrl = `http://3.223.148.111:8000/api/auth/public/users/${userId}/update`;
+
+    this.http.put(updateUrl, datosActualizados)
       .subscribe({
         next: (response: any) => {
           if (response.success) {
