@@ -5,6 +5,7 @@ import { NgFor, NgIf, DatePipe } from '@angular/common';
 import { SideNavComponent } from '../../sidenav/sidenav.component';
 import { AuthService } from '../../../../auth/auth.service';
 import { HttpClient } from '@angular/common/http';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-perfil',
@@ -211,11 +212,7 @@ export class PerfilComponent implements OnInit {
   }
 
   abrirModal() {
-    // Solo permitir edición para usuarios que no son de Google
-    if (this.usuario.auth_type === 'google') {
-      return;
-    }
-
+    // Permitir edición para ambos tipos de usuarios ahora
     this.usuarioTemporal = { 
       nombre: this.usuario.nombre, 
       usuario: this.usuario.usuario,
@@ -229,56 +226,184 @@ export class PerfilComponent implements OnInit {
 
   cerrarModal() {
     this.modalAbierto = false;
+    this.errorMessage = ''; // Limpiar errores al cerrar
   }
 
   guardarCambios() {
-    // Solo para usuarios que no son de Google
-    if (this.usuario.auth_type === 'google') {
-      this.errorMessage = 'Los usuarios de Google no pueden editar su perfil desde aquí';
-      return;
-    }
-
     this.isLoading = true;
-    const userId = this.usuario.id;
+    this.errorMessage = '';
     
-    if (!userId) {
-      this.errorMessage = 'No se pudo obtener el ID del usuario';
-      this.isLoading = false;
-      return;
-    }
-
-    const datosActualizados = {
-      username: this.usuarioTemporal.usuario,
-      display_name: this.usuarioTemporal.nombre,
-      email: this.usuarioTemporal.correo,
-      photo_url: this.imagenPreview
-    };
-
-    // Usar el endpoint apropiado según el tipo de usuario
-    const updateUrl = `http://3.223.148.111:8000/api/auth/public/users/${userId}/update`;
-
-    this.http.put(updateUrl, datosActualizados)
-      .subscribe({
-        next: (response: any) => {
-          if (response.success) {
-            this.usuario = { 
-              ...this.usuario,
-              nombre: this.usuarioTemporal.nombre,
-              displayName: this.usuarioTemporal.nombre,
-              usuario: this.usuarioTemporal.usuario,
-              correo: this.usuarioTemporal.correo,
-              imagen: this.imagenPreview
-            };
+    const currentUser = this.authService.currentUserValue;
+    const isGoogleUser = this.usuario.auth_type === 'google';
+    
+    console.log('Guardando cambios para usuario:', isGoogleUser ? 'Google' : 'Email');
+    console.log('Datos temporales:', this.usuarioTemporal);
+    
+    if (isGoogleUser) {
+      // NUEVA LÓGICA PARA USUARIOS DE GOOGLE
+      // Usar el endpoint específico con email en la URL
+      const updateData = {
+        display_name: this.usuarioTemporal.nombre
+      };
+      
+      const googleEmail = this.usuario.correo;
+      const updateUrl = `http://3.223.148.111:8000/api/auth/user/actualizar/google/${googleEmail}`;
+      
+      console.log('Enviando datos de actualización para Google:', updateData);
+      console.log('URL de actualización:', updateUrl);
+      
+      this.http.put(updateUrl, updateData)
+        .subscribe({
+          next: (response: any) => {
+            console.log('Respuesta de actualización Google:', response);
+            
+            if (response.success) {
+              // Actualizar los datos locales
+              this.usuario = { 
+                ...this.usuario,
+                nombre: this.usuarioTemporal.nombre,
+                displayName: this.usuarioTemporal.nombre
+              };
+              
+              // Mostrar mensaje de éxito
+              Swal.fire({
+                title: '¡Éxito!',
+                text: 'Perfil de Google actualizado correctamente',
+                icon: 'success',
+                confirmButtonColor: '#16a34a'
+              });
+              
+              this.cerrarModal();
+            } else {
+              this.errorMessage = response.message || 'Error desconocido al actualizar';
+            }
+            
+            this.isLoading = false;
+          },
+          error: (error) => {
+            console.error('Error al actualizar usuario de Google:', error);
+            this.isLoading = false;
+            
+            // Manejar errores específicos
+            if (error.status === 404) {
+              this.errorMessage = 'Usuario de Google no encontrado';
+            } else if (error.status === 401) {
+              this.errorMessage = 'No autorizado para realizar esta acción';
+            } else if (error.status === 400) {
+              this.errorMessage = 'Datos inválidos proporcionados';
+            } else {
+              this.errorMessage = 'Error al guardar los cambios de Google. Intente nuevamente.';
+            }
+            
+            // Mostrar error con SweetAlert
+            Swal.fire({
+              title: 'Error',
+              text: this.errorMessage,
+              icon: 'error',
+              confirmButtonColor: '#dc2626'
+            });
           }
-          this.cerrarModal();
-          this.isLoading = false;
-        },
-        error: (error) => {
-          console.error('Error al actualizar usuario:', error);
-          this.errorMessage = 'Error al guardar los cambios';
-          this.isLoading = false;
-        }
-      });
+        });
+        
+    } else {
+      // LÓGICA EXISTENTE PARA USUARIOS DE EMAIL
+      const fieldsToUpdate: any = {
+        user_id: this.usuario.id,
+        auth_type: 'email'
+      };
+      
+      // Solo incluir campos que realmente han cambiado
+      if (this.usuarioTemporal.correo !== this.usuario.correo) {
+        fieldsToUpdate.email = this.usuarioTemporal.correo;
+      }
+      
+      if (this.usuarioTemporal.usuario !== this.usuario.usuario) {
+        fieldsToUpdate.username = this.usuarioTemporal.usuario;
+      }
+      
+      if (this.usuarioTemporal.nombre !== this.usuario.nombre) {
+        fieldsToUpdate.display_name = this.usuarioTemporal.nombre;
+      }
+
+      console.log('Enviando datos de actualización para Email:', fieldsToUpdate);
+
+      // Usar el endpoint unificado para usuarios de email
+      this.http.put('http://3.223.148.111:8000/api/auth/user/actualizar', fieldsToUpdate)
+        .subscribe({
+          next: (response: any) => {
+            console.log('Respuesta de actualización Email:', response);
+            
+            if (response.success) {
+              // Actualizar los datos locales
+              this.usuario = { 
+                ...this.usuario,
+                nombre: this.usuarioTemporal.nombre,
+                displayName: this.usuarioTemporal.nombre,
+                usuario: this.usuarioTemporal.usuario,
+                correo: this.usuarioTemporal.correo,
+                imagen: this.imagenPreview
+              };
+              
+              // Mostrar mensaje de éxito
+              Swal.fire({
+                title: '¡Éxito!',
+                text: 'Perfil actualizado correctamente',
+                icon: 'success',
+                confirmButtonColor: '#16a34a'
+              });
+              
+              this.cerrarModal();
+            } else {
+              this.errorMessage = response.message || 'Error desconocido al actualizar';
+            }
+            
+            this.isLoading = false;
+          },
+          error: (error) => {
+            console.error('Error al actualizar usuario de email:', error);
+            this.isLoading = false;
+            
+            // Manejar errores específicos basados en la respuesta del backend
+            if (error.error?.type === 'validation_error') {
+              switch (error.error.error) {
+                case 'at least one field must be provided for email users (email, username or display_name)':
+                  this.errorMessage = 'Debe proporcionar al menos un campo para actualizar (email, usuario o nombre)';
+                  break;
+                case 'display_name is required for google users':
+                  this.errorMessage = 'El nombre es requerido para usuarios de Google';
+                  break;
+                case 'invalid auth_type':
+                  this.errorMessage = 'Tipo de autenticación inválido';
+                  break;
+                case 'email already in use':
+                  this.errorMessage = 'El email ya está en uso por otro usuario';
+                  break;
+                case 'user not found: sql: no rows in result set':
+                  this.errorMessage = 'Usuario no encontrado';
+                  break;
+                default:
+                  this.errorMessage = error.error.error || 'Error de validación';
+              }
+            } else if (error.status === 404) {
+              this.errorMessage = 'Usuario no encontrado';
+            } else if (error.status === 401) {
+              this.errorMessage = 'No autorizado para realizar esta acción';
+            } else if (error.status === 400) {
+              this.errorMessage = 'Datos inválidos proporcionados';
+            } else {
+              this.errorMessage = 'Error al guardar los cambios. Intente nuevamente.';
+            }
+            
+            // Mostrar error con SweetAlert
+            Swal.fire({
+              title: 'Error',
+              text: this.errorMessage,
+              icon: 'error',
+              confirmButtonColor: '#dc2626'
+            });
+          }
+        });
+    }
   }
 
   subirImagen(event: any) {

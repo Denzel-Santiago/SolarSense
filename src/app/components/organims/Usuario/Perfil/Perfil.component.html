@@ -36,15 +36,18 @@
           <p class="font-semibold mb-2">NOMBRE: {{ usuario.nombre }}</p>
           <p class="font-semibold mb-2">NOMBRE DE USUARIO: {{ usuario.usuario }}</p>
           <p class="font-semibold mb-2">CORREO: {{ usuario.correo }}</p>  
-          <p class="font-semibold">ÚLTIMO INICIO: {{ usuario.last_login | date:'medium' }}</p>
-          <p class="font-semibold">CUENTA CREADA: {{ usuario.created_at | date:'medium' }}</p>
+          <p class="font-semibold mb-2">TIPO DE CUENTA: {{ usuario.auth_type === 'google' ? 'GOOGLE' : 'EMAIL' }}</p>
+          <p class="font-semibold mb-2">ÚLTIMO INICIO: {{ usuario.last_login | date:'medium' }}</p>
+          <p class="font-semibold mb-2">CUENTA CREADA: {{ usuario.created_at | date:'medium' }}</p>
           <p class="font-semibold">ESTADO: {{ usuario.is_active ? 'ACTIVA' : 'INACTIVA' }}</p>
         </div>
 
-        <!-- Botón editar (solo para usuarios no de Google) -->
-        <button *ngIf="usuario.auth_type !== 'google'" 
-                class="text-white text-2xl" 
-                (click)="abrirModal()">✏️</button>
+        <!-- Botón editar -->
+        <button class="text-white text-2xl hover:text-gray-300 transition-colors" 
+                (click)="abrirModal()"
+                title="Editar perfil">
+          ✏️
+        </button>
       </div>
 
       <!-- Raspberries en línea -->
@@ -64,10 +67,21 @@
 
 <!-- Modal -->
 <div *ngIf="modalAbierto"
-     class="fixed inset-0 flex items-center justify-center z-50 pointer-events-auto backdrop-blur-sm">
+     class="fixed inset-0 flex items-center justify-center z-50 pointer-events-auto backdrop-blur-sm bg-black bg-opacity-50">
 
   <div class="bg-white p-6 rounded-lg w-full max-w-md shadow-lg border">
     <h2 class="text-xl font-bold mb-4 text-center">Editar Perfil</h2>
+
+    <!-- Información del tipo de cuenta -->
+    <div class="mb-4 p-3 bg-gray-100 rounded-lg">
+      <p class="text-sm text-gray-600 text-center">
+        <span class="font-semibold">Tipo de cuenta:</span> 
+        {{ usuario.auth_type === 'google' ? 'Google' : 'Email' }}
+      </p>
+      <p *ngIf="usuario.auth_type === 'google'" class="text-xs text-orange-600 text-center mt-1">
+        ⚠️ Solo puedes editar tu nombre de usuario
+      </p>
+    </div>
 
     <form (ngSubmit)="guardarCambios()" class="space-y-4">
       <!-- Imagen -->
@@ -78,37 +92,76 @@
             {{ usuarioTemporal.nombre.charAt(0) }}
           </div>
         </div>
-        <input type="file" accept="image/*" (change)="subirImagen($event)" class="mt-2 text-sm" />
+        <input type="file" 
+               accept="image/*" 
+               (change)="subirImagen($event)" 
+               class="mt-2 text-sm"
+               [disabled]="isLoading" />
       </div>
 
-      <!-- Nombre -->
-      <div>
-        <label class="block font-medium">Nombre</label>
-        <input [(ngModel)]="usuarioTemporal.nombre" name="nombre" class="w-full border rounded px-3 py-2" />
-      </div>
-
-      <!-- Usuario -->
+      <!-- Nombre (Editable para ambos tipos) -->
       <div>
         <label class="block font-medium">Nombre de Usuario</label>
-        <input [(ngModel)]="usuarioTemporal.usuario" name="usuario" class="w-full border rounded px-3 py-2" />
+        <input [(ngModel)]="usuarioTemporal.nombre" 
+               name="nombre" 
+               class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+               [disabled]="isLoading"
+               required />
       </div>
 
-      <!-- Correo -->
-      <div>
-        <label class="block font-medium">Correo</label>
-        <input [(ngModel)]="usuarioTemporal.correo" name="correo" type="email" class="w-full border rounded px-3 py-2" />
+      <!-- Usuario (Solo para usuarios de email) -->
+      <div *ngIf="usuario.auth_type !== 'google'">
+        <label class="block font-medium">Nombre de Usuario (Sistema)</label>
+        <input [(ngModel)]="usuarioTemporal.usuario" 
+               name="usuario" 
+               class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+               [disabled]="isLoading" />
+      </div>
+
+      <!-- Correo (Solo para usuarios de email) -->
+      <div *ngIf="usuario.auth_type !== 'google'">
+        <label class="block font-medium">Correo Electrónico</label>
+        <input [(ngModel)]="usuarioTemporal.correo" 
+               name="correo" 
+               type="email" 
+               class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+               [disabled]="isLoading" />
+      </div>
+
+      <!-- Campos deshabilitados para usuarios de Google -->
+      <div *ngIf="usuario.auth_type === 'google'" class="space-y-4">
+        <div>
+          <label class="block font-medium text-gray-500">Nombre de Usuario (Sistema)</label>
+          <input [value]="usuario.usuario" 
+                 class="w-full border rounded px-3 py-2 bg-gray-100 text-gray-500"
+                 disabled />
+          <p class="text-xs text-gray-500 mt-1">No editable para cuentas de Google</p>
+        </div>
+
+        <div>
+          <label class="block font-medium text-gray-500">Correo Electrónico</label>
+          <input [value]="usuario.correo" 
+                 class="w-full border rounded px-3 py-2 bg-gray-100 text-gray-500"
+                 disabled />
+          <p class="text-xs text-gray-500 mt-1">Administrado por Google</p>
+        </div>
+      </div>
+
+      <!-- Error message -->
+      <div *ngIf="errorMessage" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-3 text-sm">
+        {{ errorMessage }}
       </div>
 
       <!-- Botones -->
       <div class="flex justify-end gap-3 pt-4">
         <button type="button" 
                 (click)="cerrarModal()" 
-                class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition-colors"
                 [disabled]="isLoading">
           Cancelar
         </button>
         <button type="submit" 
-                class="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-800"
+                class="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-800 transition-colors disabled:opacity-50"
                 [disabled]="isLoading">
           <span *ngIf="!isLoading">Guardar</span>
           <span *ngIf="isLoading" class="flex items-center justify-center">
